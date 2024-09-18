@@ -64,7 +64,7 @@ class _SignUpState extends State<SignUp> {
                     hinttext: "Enter your Email",
                     mycontroller: email,
                     validator: (val) {
-                      if (val == null || val.isEmpty) {
+                      if (val == null || val.trim().isEmpty || !val.contains('@') ) {
                         return "The field can't be empty";
                       } else if (!val.endsWith('edu.sa')) {
                         return 'Please use a valid university email ending with edu.sa';
@@ -82,12 +82,14 @@ class _SignUpState extends State<SignUp> {
                     hinttext: "Enter your Password",
                     mycontroller: password,
                     validator: (val) {
-                      if (val == null || val.isEmpty) {
+                      if (val == null || val.trim().isEmpty) {
                         return "The field can't be empty";
                       } else if (val.length < 6) {
                         // Example condition for weak password
                         return 'The password provided is too weak.';
                       }
+                      else if (!RegExp(r'[A-Z]').hasMatch(val)) {      
+                         return 'The password must contain at least one uppercase letter.';     }
                       return null;
                     },
                     errorText: _passwordError,
