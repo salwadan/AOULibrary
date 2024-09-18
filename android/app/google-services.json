@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "96591392442",
+    "project_id": "fir-test-834c2",
+    "storage_bucket": "fir-test-834c2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96591392442:android:e9cccfa60146cd82721c83",
+        "android_client_info": {
+          "package_name": "com.example.firebase_test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIslIGHIAxJ_OP1FRlMKmzRDOy7tBWzh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96591392442:android:760715dfd689aa97721c83",
+        "android_client_info": {
+          "package_name": "com.example.salwa_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIslIGHIAxJ_OP1FRlMKmzRDOy7tBWzh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
