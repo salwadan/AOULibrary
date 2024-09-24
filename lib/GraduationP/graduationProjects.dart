@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:salwa_app/GraduationP/pageOfProject.dart';
 
 import 'package:salwa_app/dashboard.dart';
 
@@ -55,6 +56,10 @@ class _MyWidgetState extends State<Graduationprojects> {
   int index = 0;
   @override
   Widget build(BuildContext context) {
+    var screenHeight = MediaQuery.of(context).size.height;
+    var screenWiidth = MediaQuery.of(context).size.width;
+    print(screenWiidth);
+    print(screenHeight);
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -102,9 +107,13 @@ class _MyWidgetState extends State<Graduationprojects> {
               itemCount: projectsName.length,
               itemBuilder: (context, index) {
                 return InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Pageofproject()));
+                  },
                   child: Container(
-                      //padding: EdgeInsets.all(8),
+                      // padding: EdgeInsets.all(8),
+
                       margin: EdgeInsets.only(top: 5),
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black26, width: 3),

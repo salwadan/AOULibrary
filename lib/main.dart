@@ -7,11 +7,11 @@ import 'package:salwa_app/dashboard.dart';
 import 'package:salwa_app/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:salwa_app/homepage.dart';
-
+import 'package:device_preview/device_preview.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(DevicePreview(builder: (context) =>const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: DevicePreview.appBuilder,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
             backgroundColor: Color.fromARGB(255, 173, 204, 230),
