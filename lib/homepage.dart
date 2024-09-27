@@ -32,9 +32,10 @@ class _HomepageState extends State<Homepage> {
     var screenWiidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home page'),
+        //title: const Text('Home page'),
         actions: [
           IconButton(
+              //to log out
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context)
@@ -67,10 +68,8 @@ class _HomepageState extends State<Homepage> {
                         builder: (context) => classes[index]));
                   },
                   child: Container(
-                    
-                     width: screenWiidth,
-                      margin:
-                          EdgeInsets.only(top: 10, left: 10, right: 8),
+                      width: screenWiidth,
+                      margin: EdgeInsets.only(top: 10, left: 10, right: 8),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadiusDirectional.circular(20),
                           color: Colors.white,
@@ -84,41 +83,34 @@ class _HomepageState extends State<Homepage> {
                       child: LayoutBuilder(builder: (context, constrains) {
                         double localHeight = constrains.maxHeight;
                         double localWidth = constrains.maxWidth;
-                            print("local height = $localHeight");
-                              print("local width= $localWidth");
+                        print("local height = $localHeight");
+                        print("local width= $localWidth");
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          
                           children: [
-                             Container(
-                                padding: EdgeInsets.all(8),
-                                width: localWidth,
-                                height: localHeight *0.75,
-                                child: Image.asset(
-                                  img[index],
-                                  
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                           
                             Container(
-                              width: localWidth ,
+                              padding: EdgeInsets.all(8),
+                              width: localWidth,
+                              height: localHeight * 0.75,
+                              child: Image.asset(
+                                img[index],
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            Container(
+                              width: localWidth,
                               height: localHeight * 0.25,
-                              
                               alignment: Alignment.center,
                               color: const Color.fromARGB(255, 204, 231, 253),
-                              
                               child: SingleChildScrollView(
-                                 scrollDirection: Axis.horizontal,
+                                scrollDirection: Axis.horizontal,
                                 child: Text(
-                                   overflow: TextOverflow.ellipsis,
-                                    softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
                                   titles[index],
                                   style: TextStyle(
                                     fontSize: 18,
                                   ),
-                                  
-                                 
                                 ),
                               ),
                             ),

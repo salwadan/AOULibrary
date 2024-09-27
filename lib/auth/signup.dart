@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:salwa_app/components/custombuttonauth.dart';
@@ -64,7 +65,9 @@ class _SignUpState extends State<SignUp> {
                     hinttext: "Enter your Email",
                     mycontroller: email,
                     validator: (val) {
-                      if (val == null || val.trim().isEmpty || !val.contains('@') ) {
+                      if (val == null ||
+                          val.trim().isEmpty ||
+                          !val.contains('@')) {
                         return "The field can't be empty";
                       } else if (!val.endsWith('edu.sa')) {
                         return 'Please use a valid university email ending with edu.sa';
@@ -85,11 +88,10 @@ class _SignUpState extends State<SignUp> {
                       if (val == null || val.trim().isEmpty) {
                         return "The field can't be empty";
                       } else if (val.length < 6) {
-                        // Example condition for weak password
                         return 'The password provided is too weak.';
+                      } else if (!RegExp(r'[A-Z]').hasMatch(val)) {
+                        return 'The password must contain at least one uppercase letter.';
                       }
-                      else if (!RegExp(r'[A-Z]').hasMatch(val)) {      
-                         return 'The password must contain at least one uppercase letter.';     }
                       return null;
                     },
                     errorText: _passwordError,
@@ -105,7 +107,6 @@ class _SignUpState extends State<SignUp> {
               buttonColor: const Color.fromARGB(255, 4, 6, 93),
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  // Check if the email ends with 'edu.sa'
                   if (!email.text.trim().endsWith('edu.sa')) {
                     setState(() {
                       _emailError =
@@ -120,7 +121,20 @@ class _SignUpState extends State<SignUp> {
                       password: password.text,
                     );
                     FirebaseAuth.instance.currentUser!.sendEmailVerification();
-                    Navigator.of(context).pushReplacementNamed("login");
+
+                    // Add user information to Firestore
+                    FirebaseFirestore.instance.collection('users').add({
+                      'name': username.text,
+                      'email': email.text,
+                      'password': password.text
+                    }).then((value) {
+                      if (value != null) {
+                        print(value);
+                        Navigator.of(context).pushReplacementNamed("login");
+                      }
+                    }).catchError((error) {
+                      print("Failed to add user: $error");
+                    });
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'weak-password') {
                       setState(() {
