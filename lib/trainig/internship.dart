@@ -1,46 +1,56 @@
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Allows interaction with the Firestore database
-import 'package:salwa_app/trainig/companyInfo.dart';
+import 'package:flutter/material.dart'; // Importing Flutter's material design package
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importing Firestore package for database operations
+import 'package:salwa_app/trainig/companyInfo.dart'; // Custom file that shows detailed information about a company
 
+// Defining a StatefulWidget named Internship
 class Internship extends StatefulWidget {
-  const Internship({super.key});
+  const Internship({super.key}); // Constructor for the Internship widget
 
   @override
-  State<Internship> createState() => _InternshipState();
+  State<Internship> createState() =>
+      _InternshipState(); // Creating the state for the Internship widget
 }
 
+// State class for the Internship widget
 class _InternshipState extends State<Internship> {
   List internshipData =
-      []; //A list to store the fetched internship data from Firestore
+      []; // List to hold internship data fetched from Firestore
 
   @override
   void initState() {
     super.initState();
-    fetchInternshipData();
+    fetchInternshipData(); // Fetching internship data when the widget is initialized
   }
 
+  // Function to fetch internship data from Firestore
   Future<void> fetchInternshipData() async {
     try {
-      QuerySnapshot
-          snapshot = //A snapshot of the documents in the Firestore collection named internships.
-          await FirebaseFirestore.instance.collection('internships').get();
-      List<QueryDocumentSnapshot> docs = snapshot.docs;
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('internships')
+          .get(); // Fetching data from 'internships' collection
+
+      List<QueryDocumentSnapshot> docs =
+          snapshot.docs; // Getting the list of documents from the snapshot
 
       setState(() {
-        //Updates the internshipData
-        internshipData = docs //A list of documents fetched from the snapshot.
+        internshipData = docs
             .map((doc) => {
-                  'company_name': doc['company_name'],
-                  'city': doc['city'],
-                  'contact_number': doc['contact_number'],
-                  'description': doc['description'],
-                  'image_url': doc['image_url'],
-                  'location': doc['location']
+                  'company_name':
+                      doc['company_name'], // Extracting company name
+                  'city': doc['city'], // Extracting city
+                  'contact_number':
+                      doc['contact_number'], // Extracting contact number
+                  'email':
+                      doc['Email'], // Extracting email (note the key 'Email')
+                  'description': doc['description'], // Extracting description
+                  'image_url': doc['image_url'], // Extracting image URL
+                  'location': doc['location'], // Extracting location
                 })
-            .toList();
+            .toList(); // Converting the list of documents to a list of maps
       });
     } catch (e) {
-      print("Failed to fetch internship data: $e");
+      print(
+          "Failed to fetch internship data: $e"); // Printing error message if fetching fails
     }
   }
 
@@ -48,76 +58,85 @@ class _InternshipState extends State<Internship> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Internship'),
+        title: const Text('Internship'), // Setting the title of the app bar
       ),
       body: internshipData.isEmpty
           ? const Center(
               child:
-                  CircularProgressIndicator()) // Show loading indicator while data is being fetched
+                  CircularProgressIndicator(), // Showing a loading indicator if data is not yet fetched
+            )
           : ListView.separated(
-              //display the internship items.
-              itemCount: internshipData.length,
+              itemCount: internshipData.length, // Number of items in the list
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => Companyinfo(
-                          //Uses the ?? operator to provide default values in case the data is null.
-                          companyName:
-                              internshipData[index]['company_name'] ?? 'N/A',
-                          city: internshipData[index]['city'] ?? 'N/A',
-                          email:
-                              internshipData[index]['contact_number'] ?? 'N/A',
-                          phone:
-                              internshipData[index]['contact_number'] ?? 'N/A',
-                          location: internshipData[index]['location'] ?? 'N/A',
+                          companyName: internshipData[index]['company_name'] ??
+                              'N/A', // Passing company name to Companyinfo widget
+                          city: internshipData[index]['city'] ??
+                              'N/A', // Passing city to Companyinfo widget
+                          email: internshipData[index]['email'] ??
+                              'N/A', // Passing email to Companyinfo widget
+                          phone: internshipData[index]['contact_number'] ??
+                              'N/A', // Passing contact number to Companyinfo widget
+                          location: internshipData[index]['location'] ??
+                              'N/A', // Passing location to Companyinfo widget
                           about: internshipData[index]['description'] ??
-                              'No description available.',
-                          imageUrl: internshipData[index]['image_url'] ?? '',
+                              'No description available.', // Passing description to Companyinfo widget
+                          imageUrl: internshipData[index]['image_url'] ??
+                              '', // Passing image URL to Companyinfo widget
                         ),
                       ),
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.only(top: 5),
+                    padding:
+                        const EdgeInsets.all(8), // Padding inside the container
+                    margin: const EdgeInsets.only(
+                        top: 5), // Margin at the top of the container
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black26, width: 3),
-                      color: Colors.white,
+                      border: Border.all(
+                          color: Colors.black26, width: 3), // Border styling
+                      color: Colors.white, // Background color
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black26,
-                          spreadRadius: 1,
-                          blurRadius: 6,
+                          color: Colors.black26, // Shadow color
+                          spreadRadius: 1, // Spread radius of the shadow
+                          blurRadius: 6, // Blur radius of the shadow
                         )
                       ],
                     ),
                     child: Column(
                       children: [
                         ListTile(
-                          //display the name,city,and picture from outside
-                          title: Text(internshipData[index]['company_name']),
-                          subtitle: Text(internshipData[index]['city']),
-                          trailing: const Icon(Icons.arrow_forward_ios),
+                          title: Text(internshipData[index]
+                              ['company_name']), // Displaying company name
+                          subtitle: Text(
+                              internshipData[index]['city']), // Displaying city
+                          trailing: const Icon(Icons
+                              .arrow_forward_ios), // Icon indicating navigation
                           leading: Container(
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadiusDirectional.circular(10),
+                              borderRadius: BorderRadiusDirectional.circular(
+                                  10), // Rounded corners for the leading container
                               border: Border.all(
-                                  color:
-                                      const Color.fromARGB(255, 205, 202, 202)),
-                              color: Colors.white,
+                                  color: const Color.fromARGB(255, 205, 202,
+                                      202)), // Setting the border color using ARGB values
+                              color: Colors
+                                  .white, // Setting the background color to white
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
+                                  color: Colors.black26, // Shadow color
+                                  spreadRadius:
+                                      1, // Spread radius of the shadow
+                                  blurRadius: 3, // Blur radius of the shadow
                                 )
                               ],
                             ),
-                            child: Image.network(
-                                internshipData[index]['image_url']),
+                            child: Image.network(internshipData[index][
+                                'image_url']), // Displaying the company image from the URL
                           ),
                         ),
                       ],
@@ -127,8 +146,8 @@ class _InternshipState extends State<Internship> {
               },
               separatorBuilder: (context, i) {
                 return const Divider(
-                  color: Colors.white,
-                  height: 4,
+                  color: Colors.white, // Setting the color of the divider
+                  height: 4, // Setting the height of the divider
                 );
               },
             ),
