@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:salwa_app/courses.dart';
 import 'package:salwa_app/trainig/internship.dart';
 import 'GraduationP/graduationProjects.dart';
+import 'chatScreen.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -23,7 +24,7 @@ class _HomepageState extends State<Homepage> {
     Courses(),
     Graduationprojects(),
     Internship(),
-    Graduationprojects(),
+    ChatScreen(),
   ];
 
   @override

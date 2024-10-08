@@ -123,15 +123,28 @@ class _SignUpState extends State<SignUp> {
                     FirebaseAuth.instance.currentUser!.sendEmailVerification();
 
                     // Add user information to Firestore
-                    FirebaseFirestore.instance.collection('users').add({
+                    // HERE YOU MISSED THE USER ID AS A DOC ID
+                    // IF NO ID SPECIFIED, FIREBASE WILL ADD A RANDOM ID
+                    // FirebaseFirestore.instance.collection('users').add({
+                    //   'name': username.text,
+                    //   'email': email.text,
+                    //   'password': password.text
+                    // }).then((value) {
+                    //   print(value);
+                    //   Navigator.of(context).pushReplacementNamed("login");
+                    //                     }).catchError((error) {
+                    //   print("Failed to add user: $error");
+                    // });
+
+
+                    FirebaseFirestore.instance.collection('users').doc(
+                        credential.user?.uid
+                    ).set({
                       'name': username.text,
                       'email': email.text,
                       'password': password.text
                     }).then((value) {
-                      if (value != null) {
-                        print(value);
-                        Navigator.of(context).pushReplacementNamed("login");
-                      }
+                      Navigator.of(context).pushReplacementNamed("login");
                     }).catchError((error) {
                       print("Failed to add user: $error");
                     });
