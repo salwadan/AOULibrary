@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:salwa_app/courses.dart';
+import 'package:salwa_app/Courses/coursepage.dart';
 import 'package:salwa_app/trainig/internship.dart';
 import 'GraduationP/graduationProjects.dart';
 import 'chatScreen.dart';
