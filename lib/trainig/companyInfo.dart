@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart'; // Importing Flutter's material design package
+import 'package:url_launcher/url_launcher.dart';
 
 // Defining a stateless widget named Companyinfo
 class Companyinfo extends StatelessWidget {
@@ -21,6 +22,19 @@ class Companyinfo extends StatelessWidget {
     required this.about, // Initializing about
     required this.imageUrl, // Initializing imageUrl
   });
+  void _launchurl(Uri uri, bool inApp) async {
+    try {
+      if (await canLaunchUrl(uri)) {
+        if (inApp) {
+          await launchUrl(uri, mode: LaunchMode.inAppWebView,);
+        } else {
+          await launchUrl(uri, mode: LaunchMode.externalApplication,);
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +51,24 @@ class Companyinfo extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Container(
-                    height: 150, // Setting the height of the image container
-                    width: 150, // Setting the width of the image container
-                    child: Image.network(
-                      imageUrl, // Displaying the image from the URL
-                      fit: BoxFit
-                          .contain, // Ensuring the image fits within the container
-                    ),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue, // Shadow color
-                          spreadRadius: 2, // Spread radius of the shadow
-                          blurRadius: 6, // Blur radius of the shadow
-                        )
-                      ],
+                  Expanded(
+                    child: Container(
+                      height: 150, // Setting the height of the image container
+                      width: 150, // Setting the width of the image container
+                      child: Image.network(
+                        imageUrl, // Displaying the image from the URL
+                        fit: BoxFit
+                            .fill, // Ensuring the image fits within the container
+                      ),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue, // Shadow color
+                            spreadRadius: 2, // Spread radius of the shadow
+                            blurRadius: 6, // Blur radius of the shadow
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -74,15 +90,20 @@ class Companyinfo extends StatelessWidget {
                       Row(
                         children: [
                           // Email icon
-                          CustomIconStyle(icon: Icons.mail),
+
+                          InkWell( onTap: () =>  _launchurl(Uri.parse('mailto: $email'), false),
+                          child: CustomIconStyle(icon: Icons.mail)),
                           SizedBox(width: 8), // Adding space between icons
                           // Phone icon
-                          CustomIconStyle(icon: Icons.phone),
+                          InkWell(onTap: () =>  _launchurl(Uri.parse('tel: $phone'), false),
+                          child: CustomIconStyle(icon: Icons.phone)),
                           SizedBox(width: 8), // Adding space between icons
                           // Location icon
-                          CustomIconStyle(icon: Icons.location_on_outlined),
+                          InkWell(onTap: () =>  _launchurl(Uri.parse(location), false),
+                          child: CustomIconStyle(icon: Icons.location_on_outlined)),
                         ],
                       ),
+                      /*
                       SizedBox(
                           height: 8), // Adding space between icons and text
                       // Display email
@@ -91,7 +112,7 @@ class Companyinfo extends StatelessWidget {
                       Text("Contact: $phone", style: TextStyle(fontSize: 16)),
                       // Display location
                       Text("Location: $location",
-                          style: TextStyle(fontSize: 16)),
+                          style: TextStyle(fontSize: 16)),*/
                     ],
                   ),
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:salwa_app/homepage.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -38,12 +39,24 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ]),
           appBar: AppBar(
-            title: Text(
+            title: AutoSizeText(
               'Home',
+              maxLines: 1,
               style: TextStyle(
                 color: const Color.fromARGB(255, 8, 65, 149),
+                fontSize: 40,
               ),
             ),
+             actions: [
+          IconButton(
+              //to log out
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil("login", (route) => false);
+              },
+              icon: const Icon(Icons.exit_to_app))
+        ],
           ),
           drawer: Drawer(
             child: Container(

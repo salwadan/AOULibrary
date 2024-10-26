@@ -1,8 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:salwa_app/courses.dart';
+import 'package:salwa_app/Courses/coursepage.dart';
 import 'package:salwa_app/trainig/internship.dart';
 import 'GraduationP/graduationProjects.dart';
+import 'chatScreen.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -23,7 +25,7 @@ class _HomepageState extends State<Homepage> {
     Courses(),
     Graduationprojects(),
     Internship(),
-    Graduationprojects(),
+    ChatScreen(),
   ];
 
   @override
@@ -31,19 +33,7 @@ class _HomepageState extends State<Homepage> {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWiidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        //title: const Text('Home page'),
-        actions: [
-          IconButton(
-              //to log out
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil("login", (route) => false);
-              },
-              icon: const Icon(Icons.exit_to_app))
-        ],
-      ),
+   
       body: SingleChildScrollView(
         child: Container(
           height: screenHeight,
@@ -64,8 +54,9 @@ class _HomepageState extends State<Homepage> {
               ) {
                 return InkWell(
                   onTap: () {
+                  
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => classes[index]));
+                        builder: (context) =>  classes[index]));
                   },
                   child: Container(
                       width: screenWiidth,
@@ -83,8 +74,6 @@ class _HomepageState extends State<Homepage> {
                       child: LayoutBuilder(builder: (context, constrains) {
                         double localHeight = constrains.maxHeight;
                         double localWidth = constrains.maxWidth;
-                        print("local height = $localHeight");
-                        print("local width= $localWidth");
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
@@ -102,16 +91,16 @@ class _HomepageState extends State<Homepage> {
                               height: localHeight * 0.25,
                               alignment: Alignment.center,
                               color: const Color.fromARGB(255, 204, 231, 253),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Text(
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                  titles[index],
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
+                              child: AutoSizeText(
+                                //overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                                titles[index],
+                                style: TextStyle(
+                                  fontSize: 25,
                                 ),
+                                maxLines: 1,
+                               presetFontSizes: [60,50, 25, 19],
+                               wrapWords: false,
                               ),
                             ),
                           ],

@@ -24,9 +24,11 @@ class MyApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
+          
             backgroundColor: Color.fromARGB(255, 173, 204, 230),
             titleTextStyle: TextStyle(
                 color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
+                
             iconTheme: IconThemeData(color: Colors.blue)),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

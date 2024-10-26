@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart'; // Importing Flutter's material design package
 import 'package:cloud_firestore/cloud_firestore.dart'; // Importing Firestore package for database operations
 import 'package:salwa_app/trainig/companyInfo.dart'; // Custom file that shows detailed information about a company
-
+import 'package:auto_size_text/auto_size_text.dart';
 // Defining a StatefulWidget named Internship
 class Internship extends StatefulWidget {
   const Internship({super.key}); // Constructor for the Internship widget
@@ -58,7 +58,9 @@ class _InternshipState extends State<Internship> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Internship'), // Setting the title of the app bar
+        title: const AutoSizeText('Internship',
+        presetFontSizes: [40,30],
+        ), // Setting the title of the app bar
       ),
       body: internshipData.isEmpty
           ? const Center(
@@ -111,8 +113,8 @@ class _InternshipState extends State<Internship> {
                     child: Column(
                       children: [
                         ListTile(
-                          title: Text(internshipData[index]
-                              ['company_name']), // Displaying company name
+                          title: AutoSizeText(internshipData[index]
+                              ['company_name'], presetFontSizes: [40, 30, 20], maxLines: 1,), // Displaying company name
                           subtitle: Text(
                               internshipData[index]['city']), // Displaying city
                           trailing: const Icon(Icons
