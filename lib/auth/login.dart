@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:salwa_app/components/custombuttonauth.dart';
 import 'package:salwa_app/components/customlogoauth.dart';
 import 'package:salwa_app/components/textformfield.dart';
+import 'package:salwa_app/homepage.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -182,7 +183,9 @@ class _LoginState extends State<Login> {
             CustomButtonAuth(
               title: "Continue as a guest",
               buttonColor: const Color.fromARGB(255, 56, 101, 217),
-              onPressed: () {},
+              onPressed: () {  Navigator.of(context).pushReplacement(    
+                MaterialPageRoute(        
+                  builder: (context) =>  Homepage(isGuest: true),    ),  );},
             ),
           ],
         ),

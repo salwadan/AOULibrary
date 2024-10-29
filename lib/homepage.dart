@@ -1,14 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:salwa_app/Courses/Faculty.dart';
 import 'package:salwa_app/Courses/coursepage.dart';
 import 'package:salwa_app/trainig/internship.dart';
 import 'GraduationP/graduationProjects.dart';
 import 'chatScreen.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
-
+  final bool isGuest;
+   Homepage({Key? key, this.isGuest = false}) : super(key: key);//update
+   
   @override
   State<Homepage> createState() => _HomepageState();
 }
@@ -22,18 +24,18 @@ class _HomepageState extends State<Homepage> {
   ];
   List titles = ["Courses", "Graduation Projects", "Internship", "Chat"];
   List<Widget> classes = [
-    Courses(),
+    Faculty(),
     Graduationprojects(),
     Internship(),
     ChatScreen(),
   ];
-
+  int index = 0;
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWiidth = MediaQuery.of(context).size.width;
     return Scaffold(
-   
+      
       body: SingleChildScrollView(
         child: Container(
           height: screenHeight,
@@ -53,11 +55,14 @@ class _HomepageState extends State<Homepage> {
                 index,
               ) {
                 return InkWell(
-                  onTap: () {
-                  
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>  classes[index]));
-                  },
+                  onTap: () { if(widget.isGuest && titles[index]== "Chat")
+                  {    showDialog(context: context,        builder: (context) => AlertDialog(          title: const Text("Access Restricted"),  
+                          content: const Text("please log in to access the chat feature."),     
+                               actions: [            TextButton(onPressed: () => Navigator.pop(context),             
+                                  child: const Text("OK"),            ),          ],        ),    );  } 
+                                   else{  
+                                      Navigator.of(context).push(MaterialPageRoute(    
+                                            builder: (context) => classes[index]),    );  }},//update until here of preventing guest from access chat
                   child: Container(
                       width: screenWiidth,
                       margin: EdgeInsets.only(top: 10, left: 10, right: 8),

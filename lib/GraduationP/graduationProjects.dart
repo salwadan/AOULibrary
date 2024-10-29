@@ -19,6 +19,7 @@ class _MyWidgetState extends State<Graduationprojects> {
     super.initState();
     fetchProjectData(); // Fetch data when the widget is initialized
   }
+  
 
   // Function to fetch project data from Firestore
   Future<void> fetchProjectData() async {
@@ -106,17 +107,16 @@ class _MyWidgetState extends State<Graduationprojects> {
                         MaterialPageRoute(
                           builder: (context) => Pageofproject(
                             projectName: projectData[index]
-                                ['project Name'], // Pass project name
+                                ['project_name'], // Pass project name
                             studentName: projectData[index]
-                                ['student name'], // Pass student name
+                                ['student_name'], // Pass student name
                             description: projectData[index]
                                 ['description'], // Pass project description
                             imageUrl: projectData[index]
-                                ['image'], // Pass image URL
+                                ['image_url'], // Pass image URL
                             programmingLanguage: projectData[index][
                                 'programming_language'], // Pass programming language
-                            studentEmail:
-                                'example@example.com', // Placeholder for student email
+                           // Placeholder for student email
                           ), // Navigate to project details page
                         ),
                       );
