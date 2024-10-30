@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:salwa_app/Courses/Faculty.dart';
 import 'package:salwa_app/Courses/coursepage.dart';
+import 'package:salwa_app/GraduationP/projectPage.dart';
 import 'package:salwa_app/trainig/internship.dart';
 import 'GraduationP/graduationProjects.dart';
 import 'chatScreen.dart';
@@ -25,7 +26,8 @@ class _HomepageState extends State<Homepage> {
   List titles = ["Courses", "Graduation Projects", "Internship", "Chat"];
   List<Widget> classes = [
     Faculty(),
-    Graduationprojects(),
+    //Graduationprojects(),
+    Projectpage(),
     Internship(),
     ChatScreen(),
   ];

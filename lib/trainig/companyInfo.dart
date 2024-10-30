@@ -103,16 +103,7 @@ class Companyinfo extends StatelessWidget {
                           child: CustomIconStyle(icon: Icons.location_on_outlined)),
                         ],
                       ),
-                      /*
-                      SizedBox(
-                          height: 8), // Adding space between icons and text
-                      // Display email
-                      Text("Email: $email", style: TextStyle(fontSize: 16)),
-                      // Display phone
-                      Text("Contact: $phone", style: TextStyle(fontSize: 16)),
-                      // Display location
-                      Text("Location: $location",
-                          style: TextStyle(fontSize: 16)),*/
+                     
                     ],
                   ),
                 ],
