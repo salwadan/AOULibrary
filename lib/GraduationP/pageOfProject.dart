@@ -6,7 +6,7 @@ class Pageofproject extends StatefulWidget {
   final String description; // To hold the project description
   final String imageUrl; // To hold the image URL
   final String programmingLanguage; // To hold the programming language used
-  final String studentEmail; // To hold student's email (if necessary)
+  //final String studentEmail; // To hold student's email (if necessary)
 
   const Pageofproject({
     super.key,
@@ -15,7 +15,7 @@ class Pageofproject extends StatefulWidget {
     required this.description,
     required this.imageUrl,
     required this.programmingLanguage,
-    required this.studentEmail,
+    // required this.studentEmail,
   });
 
   @override
@@ -25,6 +25,7 @@ class Pageofproject extends StatefulWidget {
 class _PageofprojectState extends State<Pageofproject> {
   @override
   Widget build(BuildContext context) {
+   
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.projectName), // Set app bar title to project name
@@ -44,7 +45,8 @@ class _PageofprojectState extends State<Pageofproject> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8), // Rounded corners
                     image: DecorationImage(
-                      image: NetworkImage(widget.imageUrl), // Display project image
+                      image: NetworkImage(
+                          widget.imageUrl), // Display project image
                       fit: BoxFit.cover, // Cover the entire container
                     ),
                   ),
@@ -71,10 +73,6 @@ class _PageofprojectState extends State<Pageofproject> {
                   style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  "Contact Email: ${widget.studentEmail}", // Display student email
-                  style: const TextStyle(fontSize: 16),
-                ),
               ],
             ),
           ),
