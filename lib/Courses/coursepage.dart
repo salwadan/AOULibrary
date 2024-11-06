@@ -1,43 +1,42 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'classification.dart';
 
-class Courses extends StatefulWidget {
-  const Courses({super.key});
+
+class CoursePage extends StatefulWidget {
+  final String courseName;
+
+  CoursePage({required this.courseName});
 
   @override
-  State<Courses> createState() => _MyWidgetState();
+  _CoursePageState createState() => _CoursePageState();
 }
 
-class _MyWidgetState extends State<Courses> {
+class _CoursePageState extends State<CoursePage> {
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(length: 2,
-      child: Scaffold(
-          appBar: AppBar(
-        title: Text(
-          'Courses',
-          style: TextStyle(color: Colors.blue),
-        ),
-        bottom: TabBar(tabs: [
-          Tab(
-            child: Text('Feedback', style: TextStyle(color: Colors.blue),),
-            
-          ),
-          Tab(
-            child: Text('material', style: TextStyle(color: Colors.blue),
-            ),
-          )
-        ]),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(10),
-        child: TabBarView(children: [
-          Text("Comment"),
-          Text('Course Material'),
-        ]),
-      ),
-      ),
+    return Scaffold(
 
+      body: ListView(
+        children: [
+          ClassificationItem(
+            title: "Lecture",
+            items: ["Lecture 1", "Lecture 2", "Lecture 3"],
+          ),
+          ClassificationItem(
+            title: "Summary",
+
+            items: ["Summary 1", "Summary 2", "Summary 3"],
+          ),
+          ClassificationItem(
+            title: "Old Exam",
+            items: ["Exam 2022", "Exam 2021", "Exam 2020"],
+          ),
+
+        ],
+      ),
     );
   }
 }
+

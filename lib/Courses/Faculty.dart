@@ -14,8 +14,8 @@ class Faculty extends StatefulWidget {
 
 final List<Widget> classes = [
   Computerco(),
-  BusinessCo(),
-  Languageco(),
+  Businessco(),
+  LanguageCo(),
 ];
 
 final List<String> faculty = [

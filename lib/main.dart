@@ -8,6 +8,7 @@ import 'package:salwa_app/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:salwa_app/homepage.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:salwa_app/welcomescreen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -92,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+        body :Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
