@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'coursepage.dart';
+import 'courses.dart';
 
 class LanguageCo extends StatefulWidget {
   const LanguageCo({super.key});
@@ -67,9 +66,9 @@ class _LanguageCoState extends State<LanguageCo> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CoursePage(
-                            courseName: LanguageCourses[index],
-                          ),
+                          builder: (context) => Courses(),
+
+
                         ),
                       );
                     },

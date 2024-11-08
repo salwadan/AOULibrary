@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'coursepage.dart';
+import 'courses.dart';
 
 class Businessco extends StatefulWidget {
   const Businessco({super.key});
@@ -60,18 +59,17 @@ class _BusinesscoState extends State<Businessco> {
                       Icons.arrow_forward_ios,
                       color: Colors.blue,
                       size: 30,
-                    ),
-                    onTap: () {
-                      // Navigate to the CoursePage when an item is tapped
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CoursePage(
-                            courseName: BusinessCourses[index],
-                          ),
-                        ),
-                      );
-                    },
+                    ),onTap: () {
+                    // Navigate to the CoursePage when an item is tapped
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Courses(),
+
+
+                      ),
+                    );
+                  },
                   ),
                 ),
               );
