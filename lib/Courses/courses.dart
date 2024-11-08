@@ -1,8 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:salwa_app/Courses/coursepage.dart';
-import 'package:comment_box/comment/comment.dart';
-import 'package:comment_box/comment/test.dart';
-import 'package:comment_box/main.dart';
+
+import 'comments.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -36,7 +36,8 @@ class _MyWidgetState extends State<Courses> {
           padding: EdgeInsets.all(10),
           child: TabBarView(children: [
             CoursePage(courseName: "courseName"),
-            TestMe(),
+            Comments(),
+
           ]),
         ),
       ),

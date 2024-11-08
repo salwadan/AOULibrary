@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart'; // Importing Flutter's material design package
 import 'package:url_launcher/url_launcher.dart';

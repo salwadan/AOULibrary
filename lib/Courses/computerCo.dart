@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:salwa_app/Courses/courses.dart';
 
-import 'coursepage.dart';
 
 class Computerco extends StatefulWidget {
   const Computerco({super.key});
