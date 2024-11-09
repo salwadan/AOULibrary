@@ -95,6 +95,7 @@ class _SignUpState extends State<SignUp> {
                       return null;
                     },
                     errorText: _passwordError,
+                    obscureText: true, // Enable password obscuring
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 10, bottom: 20),
@@ -123,23 +124,10 @@ class _SignUpState extends State<SignUp> {
                     FirebaseAuth.instance.currentUser!.sendEmailVerification();
 
                     // Add user information to Firestore
-                    // HERE YOU MISSED THE USER ID AS A DOC ID
-                    // IF NO ID SPECIFIED, FIREBASE WILL ADD A RANDOM ID
-                    // FirebaseFirestore.instance.collection('users').add({
-                    //   'name': username.text,
-                    //   'email': email.text,
-                    //   'password': password.text
-                    // }).then((value) {
-                    //   print(value);
-                    //   Navigator.of(context).pushReplacementNamed("login");
-                    //                     }).catchError((error) {
-                    //   print("Failed to add user: $error");
-                    // });
-
-
-                    FirebaseFirestore.instance.collection('users').doc(
-                        credential.user?.uid
-                    ).set({
+                    FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(credential.user?.uid)
+                        .set({
                       'name': username.text,
                       'email': email.text,
                       'password': password.text

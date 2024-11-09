@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:salwa_app/widget/chat_Message.dart';
 import 'package:salwa_app/widget/new_message.dart';
 
-
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
@@ -12,10 +11,8 @@ class ChatScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('AOULibrary Chat ')),
       body: const Column(
         children: [
-          Expanded(child: ChatMessage()
-          ),
+          Expanded(child: ChatMessage()),
           NewMessage(),
-
         ],
       ),
     );

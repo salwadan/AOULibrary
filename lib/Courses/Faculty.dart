@@ -52,7 +52,7 @@ class _FacultyState extends State<Faculty> {
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 22, vertical: 10),
                   width: MediaQuery.of(context).size.width,
-                  height: screenHeight /3,
+                  height: screenHeight / 3,
                   decoration: BoxDecoration(
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(15),
@@ -94,7 +94,9 @@ class _FacultyState extends State<Faculty> {
                                 maxLines: 1,
                                 presetFontSizes: [50, 40, 30, 25, 20],
                                 wrapWords: false,
-                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
                               trailing: Icon(
                                 Icons.arrow_forward_outlined,

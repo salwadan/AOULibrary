@@ -65,6 +65,7 @@ class _LoginState extends State<Login> {
                   CustomTextForm(
                     hinttext: "Enter your Password",
                     mycontroller: password,
+                    obscureText: true, // This hides the password input
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return "The field can't be empty";
@@ -101,9 +102,11 @@ class _LoginState extends State<Login> {
                     child: Container(
                       margin: const EdgeInsets.only(top: 10, bottom: 20),
                       alignment: Alignment.topRight,
-                      child: const Text("Forgot password?",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 14)),
+                      child: const Text(
+                        "Forgot password?",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                   ),
                   if (_message != null) // Display the message
@@ -183,9 +186,13 @@ class _LoginState extends State<Login> {
             CustomButtonAuth(
               title: "Continue as a guest",
               buttonColor: const Color.fromARGB(255, 56, 101, 217),
-              onPressed: () {  Navigator.of(context).pushReplacement(    
-                MaterialPageRoute(        
-                  builder: (context) =>  Homepage(isGuest: true),    ),  );},
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => Homepage(isGuest: true),
+                  ),
+                );
+              },
             ),
           ],
         ),

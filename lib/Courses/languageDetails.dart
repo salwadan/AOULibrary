@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'comments.dart'; // Assuming you have a Comments widget for feedback
 
-class CoursePage extends StatefulWidget {
+class Languagedetails extends StatefulWidget {
   final String courseName;
 
-  CoursePage({required this.courseName});
+  Languagedetails({required this.courseName});
 
   @override
-  _CoursePageState createState() => _CoursePageState();
+  _LanguagedetailsState createState() => _LanguagedetailsState();
 }
 
-class _CoursePageState extends State<CoursePage> {
+class _LanguagedetailsState extends State<Languagedetails> {
   List<String> fetchedLectures = [];
   List<String> fetchedSummaries = [];
   List<String> fetchedExams = [];
@@ -28,7 +28,7 @@ class _CoursePageState extends State<CoursePage> {
       // Fetch course details from Firestore for the selected course
       var courseDoc = await FirebaseFirestore.instance
           .collection('courses')
-          .doc('Faculty_Of_Computer') // Adjust as needed
+          .doc('Faculty_Of_Language') // Corrected to Faculty_Of_Language
           .collection('course_name')
           .doc(widget.courseName)
           .get();
