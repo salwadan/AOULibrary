@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:salwa_app/auth/login.dart';
 import 'package:salwa_app/auth/signup.dart';
 import 'package:salwa_app/dashboard.dart';
-import 'package:salwa_app/firebase_options.dart';
+import 'package:salwa_app/firbase/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:salwa_app/homepage.dart';
 import 'package:device_preview/device_preview.dart';
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         appBarTheme: AppBarTheme(
           
-            backgroundColor: Color.fromARGB(255, 173, 204, 230),
+            backgroundColor:  const Color.fromARGB(255, 194, 214, 231),
             titleTextStyle: TextStyle(
                 color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
                 
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       ),
       home: (FirebaseAuth.instance.currentUser != null &&
               FirebaseAuth.instance.currentUser!.emailVerified)
-          ? Dashboard()
+          ? Homepage()
           : Login(),
       routes: {
         "signup": (context) => const SignUp(),

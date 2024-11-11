@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'comments.dart'; // Assuming you have a Comments widget for feedback
-
+import 'package:url_launcher/url_launcher.dart';
+import 'package:salwa_app/Courses/classification.dart';
 class Businessdetails extends StatefulWidget {
   final String courseName;
 
@@ -64,6 +65,15 @@ class _BusinessdetailsState extends State<Businessdetails> {
     }
   }
 
+  void _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      print('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,12 +99,13 @@ class _BusinessdetailsState extends State<Businessdetails> {
                         // Material Content
                         ListView(
                           children: [
-                            // Lecture Classification
+                            // Lecture Classification with URL launcher
                             ClassificationItem(
                               title: "Lecture",
                               items: fetchedLectures.isEmpty
                                   ? ['No Lectures Available']
                                   : fetchedLectures,
+                              onItemTap: (url) => _launchURL(url),
                             ),
                             // Summary Classification
                             ClassificationItem(
@@ -124,24 +135,3 @@ class _BusinessdetailsState extends State<Businessdetails> {
   }
 }
 
-class ClassificationItem extends StatelessWidget {
-  final String title;
-  final List<String> items;
-
-  const ClassificationItem({required this.title, required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: ExpansionTile(
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        children: items
-            .map((item) => ListTile(
-                  title: Text(item),
-                ))
-            .toList(),
-      ),
-    );
-  }
-}

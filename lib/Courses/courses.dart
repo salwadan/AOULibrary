@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:salwa_app/Courses/coursepage.dart'; // Ensure this is your course page file
+import 'package:salwa_app/Courses/computerDetails.dart'; // Ensure this is your course page file
 import 'comments.dart'; // Feedback section
 
 class Courses extends StatefulWidget {

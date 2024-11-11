@@ -38,7 +38,7 @@ dependencies:
   firebase_core: ^3.4.1
   cloud_firestore: ^5.4.1
   firebase_auth: ^5.2.1
-  firebase_storage: ^12.3.0
+  firebase_storage: ^12.3.5
   firebase_messaging: ^15.1.1
   #awesome_dialog:
   device_preview: ^1.2.0
@@ -48,6 +48,9 @@ dependencies:
   easy_comment: ^0.0.7
   easypost: ^1.0.0
   adaptive_dialog: ^2.2.1+2
+  file_picker: ^8.1.4
+  pdf_viewer_plugin: ^2.0.1
+  
 
 
 

@@ -35,7 +35,7 @@ class _FacultyState extends State<Faculty> {
     var screenWiidth = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 194, 214, 231),
+          backgroundColor: const Color.fromRGBO(194, 214, 231, 1),
           title: Text(
             'University majors ',
             style: const TextStyle(color: Colors.white, fontSize: 20),

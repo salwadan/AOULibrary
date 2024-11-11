@@ -120,15 +120,17 @@ class _AccountState extends State<Account> {
             SizedBox(height: 15),
             CustomButtonAuth(
               title: "Change Password",
-              buttonColor: const Color.fromARGB(255, 4, 6, 93),
+              buttonColor: const Color.fromARGB(255, 56, 101, 217),
               onPressed: _showPasswordChangeDialog, // Show dialog when pressed
               width: double.infinity,
             ),
+
+            SizedBox(height: 15),
             CustomButtonAuth(
               title: "Submit",
-              buttonColor: const Color.fromARGB(255, 93, 192, 249),
+              buttonColor: const Color.fromRGBO(4, 6, 93, 1),
               onPressed: _showPasswordChangeDialog, // Show dialog when pressed
-              //width: double.infinity,
+              width: double.infinity,
             ),
           ],
         ),
