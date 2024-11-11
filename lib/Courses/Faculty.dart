@@ -25,7 +25,7 @@ final List<String> faculty = [
 List images = [
   "assets/computerFaculty.png",
   "assets/Buisness.png",
-  "assets/languages.png"
+  "assets/language.jpeg"
 ];
 
 class _FacultyState extends State<Faculty> {

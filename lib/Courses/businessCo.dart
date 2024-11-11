@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:salwa_app/Courses/businessDetails.dart'; // Make sure the import path is correct
+import 'package:salwa_app/Courses/businessDetails.dart'; // Ensure the import path is correct
 
 class Businessco extends StatefulWidget {
   const Businessco({super.key});
@@ -10,6 +10,9 @@ class Businessco extends StatefulWidget {
 }
 
 class _BusinesscoState extends State<Businessco> {
+  TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
@@ -22,6 +25,14 @@ class _BusinesscoState extends State<Businessco> {
           'Courses of Faculty of Business Studies',
           style: TextStyle(color: Colors.white, fontSize: 20),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () {
+              showSearchDialog(context);
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -37,7 +48,11 @@ class _BusinesscoState extends State<Businessco> {
             return const Center(child: Text("No courses available."));
           }
 
-          final courses = snapshot.data!.docs;
+          // Filter courses based on search query
+          final courses = snapshot.data!.docs
+              .where((course) =>
+                  course.id.toLowerCase().contains(_searchQuery.toLowerCase()))
+              .toList();
 
           return ListView.builder(
             itemCount: courses.length,
@@ -85,6 +100,33 @@ class _BusinesscoState extends State<Businessco> {
             },
           );
         },
+      ),
+    );
+  }
+
+  // Function to show the search dialog
+  void showSearchDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Search Courses'),
+        content: TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(hintText: "Enter course name"),
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+            });
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Close"),
+          ),
+        ],
       ),
     );
   }

@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
 
 class CustomButtonAuth extends StatelessWidget {
-  final void Function()? onPressed;
   final String title;
-  final Color? buttonColor;
+  final Color buttonColor;
+  final VoidCallback onPressed;
+  final double? width; // Optional width parameter
+
   const CustomButtonAuth({
-    super.key,
-    this.onPressed,
+    Key? key,
     required this.title,
-    this.buttonColor = const Color.fromARGB(255, 4, 6, 93),
-  });
+    required this.buttonColor,
+    required this.onPressed,
+    this.width, // Initialize the optional width
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      height: 40,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      color: buttonColor,
-      textColor: Colors.white,
-      onPressed: onPressed,
-      child: Text(title),
+    return SizedBox(
+      width: width ?? 200, // Default width if not provided
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          title,
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+      ),
     );
   }
 }

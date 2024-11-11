@@ -46,6 +46,27 @@ class _CommentsState extends State<Comments> {
 
   // Function to add a comment to Firestore
   Future<void> addComment() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // If the user is not logged in, show a dialog to prompt them to log in
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Login Required'),
+          content: const Text('You must be logged in to submit a feedback.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return; // Do not proceed with adding the comment
+    }
+
     final commentText = _commentController.text.trim();
     if (commentText.isNotEmpty) {
       await FirebaseFirestore.instance.collection('comments').add({

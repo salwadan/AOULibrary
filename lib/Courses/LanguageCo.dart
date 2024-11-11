@@ -10,6 +10,9 @@ class LanguageCo extends StatefulWidget {
 }
 
 class _LanguageCoState extends State<LanguageCo> {
+  TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
@@ -22,6 +25,14 @@ class _LanguageCoState extends State<LanguageCo> {
           'Courses of Faculty of Language Studies',
           style: TextStyle(color: Colors.white, fontSize: 20),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () {
+              showSearchDialog(context);
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -38,14 +49,17 @@ class _LanguageCoState extends State<LanguageCo> {
             return const Center(child: Text("No courses available."));
           }
 
-          final courses = snapshot.data!.docs;
+          // Filter courses based on search query
+          final courses = snapshot.data!.docs
+              .where((course) =>
+                  course.id.toLowerCase().contains(_searchQuery.toLowerCase()))
+              .toList();
 
           return ListView.builder(
             itemCount: courses.length,
             itemBuilder: (context, index) {
               var courseData = courses[index];
-              var courseName =
-                  courseData.id; // Get course name from document ID
+              var courseName = courseData.id;
 
               return Container(
                 height: screenHeight / 5,
@@ -86,6 +100,33 @@ class _LanguageCoState extends State<LanguageCo> {
             },
           );
         },
+      ),
+    );
+  }
+
+  // Function to show the search dialog
+  void showSearchDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Search Courses'),
+        content: TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(hintText: "Enter course name"),
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+            });
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Close"),
+          ),
+        ],
       ),
     );
   }

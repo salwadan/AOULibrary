@@ -47,6 +47,7 @@ dependencies:
   comment_box: ^0.0.18
   easy_comment: ^0.0.7
   easypost: ^1.0.0
+  adaptive_dialog: ^2.2.1+2
 
 
 
