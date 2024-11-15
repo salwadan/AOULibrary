@@ -49,7 +49,7 @@ dependencies:
   easypost: ^1.0.0
   adaptive_dialog: ^2.2.1+2
   file_picker: ^8.1.4
-  pdf_viewer_plugin: ^2.0.1
+  #pdf_viewer_plugin: ^2.0.1
   
 
 
