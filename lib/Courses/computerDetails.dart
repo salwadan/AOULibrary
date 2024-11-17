@@ -4,7 +4,6 @@ import 'package:salwa_app/Courses/classification.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'comments.dart';
 
-
 class CoursePage extends StatefulWidget {
   final String courseName;
 
@@ -18,7 +17,9 @@ class _CoursePageState extends State<CoursePage> {
   List<String> fetchedLectures = [];
   List<String> fetchedSummaries = [];
   List<String> fetchedExams = [];
+  String? fetchedOverview; // For storing the overview text
   bool isLoading = true;
+  bool isOverviewExpanded = false; // State for managing the expanded view
 
   @override
   void initState() {
@@ -38,11 +39,13 @@ class _CoursePageState extends State<CoursePage> {
       var lecturesSnapshot = courseDoc.data()?['lecture'];
       var summariesSnapshot = courseDoc.data()?['summary'];
       var examsSnapshot = courseDoc.data()?['old_exam'];
+      var overviewSnapshot = courseDoc.data()?['overview'];
 
       setState(() {
         fetchedLectures = _extractArray(lecturesSnapshot);
         fetchedSummaries = _extractArray(summariesSnapshot);
         fetchedExams = _extractArray(examsSnapshot);
+        fetchedOverview = overviewSnapshot?.toString() ?? 'No Overview Available';
         isLoading = false;
       });
     } catch (e) {
@@ -111,6 +114,50 @@ class _CoursePageState extends State<CoursePage> {
                               items: fetchedExams.isEmpty
                                   ? ['No Old Exams Available']
                                   : fetchedExams,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isOverviewExpanded = !isOverviewExpanded;
+                                });
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                padding: EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Overview",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    if (isOverviewExpanded)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8.0),
+                                        child: Text(
+                                          fetchedOverview ?? 'No Overview Available',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),
