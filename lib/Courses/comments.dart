@@ -53,7 +53,7 @@ class _CommentsState extends State<Comments> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Login Required'),
-          content: const Text('You must be logged in to submit a feedback.'),
+          content: const Text('You must be logged in to submit feedback.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -69,14 +69,39 @@ class _CommentsState extends State<Comments> {
 
     final commentText = _commentController.text.trim();
     if (commentText.isNotEmpty) {
-      await FirebaseFirestore.instance.collection('comments').add({
-        'course_id': widget.courseId,
-        'text': commentText,
-        'time': FieldValue
-            .serverTimestamp(), // Ensure the time field is set correctly
-        'username': username,
-      });
-      _commentController.clear();
+      try {
+        await FirebaseFirestore.instance.collection('comments').add({
+          'course_id': widget.courseId,
+          'text': commentText,
+          'time': FieldValue.serverTimestamp(),
+          'username': username,
+        });
+        _commentController.clear();
+
+        // Show a confirmation Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Feedback submitted successfully!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } catch (e) {
+        // Handle any errors that occur during submission
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to submit feedback. Please try again.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } else {
+      // Show a Snackbar if the comment field is empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter your feedback before submitting.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 

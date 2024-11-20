@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'comments.dart'; // Assuming you have a Comments widget for feedback
 import 'package:url_launcher/url_launcher.dart';
 import 'package:salwa_app/Courses/classification.dart';
+
 class Businessdetails extends StatefulWidget {
   final String courseName;
 
@@ -16,9 +17,8 @@ class _BusinessdetailsState extends State<Businessdetails> {
   List<String> fetchedLectures = [];
   List<String> fetchedSummaries = [];
   List<String> fetchedExams = [];
-  bool isLoading = true; // To track loading state
   String? fetchedOverview; // For storing the overview text
-  bool isOverviewExpanded = false; // State for managing the expanded view
+  bool isLoading = true; // To track loading state
 
   @override
   void initState() {
@@ -63,9 +63,7 @@ class _BusinessdetailsState extends State<Businessdetails> {
     if (data is List) {
       return data.map((item) => item?.toString() ?? 'Unnamed Item').toList();
     } else {
-      return [
-        'Unnamed Item'
-      ]; // Return a default value if the data isn't a List
+      return ['Unnamed Item']; // Return a default value if the data isn't a List
     }
   }
 
@@ -103,6 +101,16 @@ class _BusinessdetailsState extends State<Businessdetails> {
                         // Material Content
                         ListView(
                           children: [
+                            // Overview Classification
+                            ClassificationItem(
+                              title: "Overview",
+                              items: fetchedOverview == null
+                                  ? ['No Overview Available']
+                                  : [fetchedOverview!],
+                              onItemTap: (item) {
+                                // Do nothing; overview is static text
+                              },
+                            ),
                             // Lecture Classification with URL launcher
                             ClassificationItem(
                               title: "Lecture",
@@ -117,6 +125,7 @@ class _BusinessdetailsState extends State<Businessdetails> {
                               items: fetchedSummaries.isEmpty
                                   ? ['No Summaries Available']
                                   : fetchedSummaries,
+                              onItemTap: (url) => _launchURL(url),
                             ),
                             // Old Exam Classification
                             ClassificationItem(
@@ -124,50 +133,7 @@ class _BusinessdetailsState extends State<Businessdetails> {
                               items: fetchedExams.isEmpty
                                   ? ['No Old Exams Available']
                                   : fetchedExams,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isOverviewExpanded = !isOverviewExpanded;
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Overview",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    if (isOverviewExpanded)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 8.0),
-                                        child: Text(
-                                          fetchedOverview ?? 'No Overview Available',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
+                              onItemTap: (url) => _launchURL(url),
                             ),
                           ],
                         ),
@@ -182,4 +148,3 @@ class _BusinessdetailsState extends State<Businessdetails> {
     );
   }
 }
-

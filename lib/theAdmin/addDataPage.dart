@@ -19,23 +19,35 @@ class _AddDataPageState extends State<AddDataPage> {
   final TextEditingController lectureController = TextEditingController();
   final TextEditingController oldExamController = TextEditingController();
   final TextEditingController summaryController = TextEditingController();
+  final TextEditingController overviewController = TextEditingController();
 
   // Controllers for Graduation Projects Section
   final TextEditingController projectNameController = TextEditingController();
-  final TextEditingController projectDescriptionController = TextEditingController();
-  final TextEditingController projectImageUrlController = TextEditingController();
-  final TextEditingController projectProgrammingLangController = TextEditingController();
-  final TextEditingController projectStudentNameController = TextEditingController();
+  final TextEditingController projectDescriptionController =
+      TextEditingController();
+  final TextEditingController projectImageUrlController =
+      TextEditingController();
+  final TextEditingController projectProgrammingLangController =
+      TextEditingController();
+  final TextEditingController projectStudentNameController =
+      TextEditingController();
   final TextEditingController projectTypeController = TextEditingController();
 
   // Controllers for Internships Section
-  final TextEditingController internshipCompanyNameController = TextEditingController();
-  final TextEditingController internshipEmailController = TextEditingController();
-  final TextEditingController internshipCityController = TextEditingController();
-  final TextEditingController internshipContactController = TextEditingController();
-  final TextEditingController internshipDescriptionController = TextEditingController();
-  final TextEditingController internshipImageUrlController = TextEditingController();
-  final TextEditingController internshipLocationController = TextEditingController();
+  final TextEditingController internshipCompanyNameController =
+      TextEditingController();
+  final TextEditingController internshipEmailController =
+      TextEditingController();
+  final TextEditingController internshipCityController =
+      TextEditingController();
+  final TextEditingController internshipContactController =
+      TextEditingController();
+  final TextEditingController internshipDescriptionController =
+      TextEditingController();
+  final TextEditingController internshipImageUrlController =
+      TextEditingController();
+  final TextEditingController internshipLocationController =
+      TextEditingController();
 
   String? _message;
 
@@ -51,6 +63,7 @@ class _AddDataPageState extends State<AddDataPage> {
         'lecture': FieldValue.arrayUnion([lectureController.text]),
         'old_exam': FieldValue.arrayUnion([oldExamController.text]),
         'summary': FieldValue.arrayUnion([summaryController.text]),
+        'overview': overviewController.text,
       }, SetOptions(merge: true));
       setState(() {
         _message = "Course added successfully!";
@@ -120,6 +133,7 @@ class _AddDataPageState extends State<AddDataPage> {
     internshipDescriptionController.clear();
     internshipImageUrlController.clear();
     internshipLocationController.clear();
+    overviewController.clear();
   }
 
   @override
@@ -171,11 +185,16 @@ class _AddDataPageState extends State<AddDataPage> {
                         selectedFaculty = value!;
                       });
                     },
-                    decoration: const InputDecoration(labelText: "Select Faculty"),
+                    decoration:
+                        const InputDecoration(labelText: "Select Faculty"),
                   ),
                   TextFormField(
                     controller: courseNameController,
                     decoration: const InputDecoration(labelText: "Course Name"),
+                  ),
+                  TextFormField(
+                    controller: overviewController,
+                    decoration: const InputDecoration(labelText: "Overview"),
                   ),
                   TextFormField(
                     controller: lectureController,
@@ -189,6 +208,7 @@ class _AddDataPageState extends State<AddDataPage> {
                     controller: summaryController,
                     decoration: const InputDecoration(labelText: "Summary"),
                   ),
+
                   ElevatedButton(
                     onPressed: addCourse,
                     child: const Text("Add Course"),
@@ -200,7 +220,8 @@ class _AddDataPageState extends State<AddDataPage> {
                   ),
                   TextFormField(
                     controller: projectNameController,
-                    decoration: const InputDecoration(labelText: "Project Name"),
+                    decoration:
+                        const InputDecoration(labelText: "Project Name"),
                   ),
                   TextFormField(
                     controller: projectDescriptionController,
@@ -212,15 +233,18 @@ class _AddDataPageState extends State<AddDataPage> {
                   ),
                   TextFormField(
                     controller: projectProgrammingLangController,
-                    decoration: const InputDecoration(labelText: "Programming Language"),
+                    decoration: const InputDecoration(
+                        labelText: "Programming Language"),
                   ),
                   TextFormField(
                     controller: projectStudentNameController,
-                    decoration: const InputDecoration(labelText: "Student Name"),
+                    decoration:
+                        const InputDecoration(labelText: "Student Name"),
                   ),
                   TextFormField(
                     controller: projectTypeController,
-                    decoration: const InputDecoration(labelText: "Project Type"),
+                    decoration:
+                        const InputDecoration(labelText: "Project Type"),
                   ),
                   ElevatedButton(
                     onPressed: addGraduationProject,
@@ -233,7 +257,8 @@ class _AddDataPageState extends State<AddDataPage> {
                   ),
                   TextFormField(
                     controller: internshipCompanyNameController,
-                    decoration: const InputDecoration(labelText: "Company Name"),
+                    decoration:
+                        const InputDecoration(labelText: "Company Name"),
                   ),
                   TextFormField(
                     controller: internshipEmailController,
@@ -245,7 +270,8 @@ class _AddDataPageState extends State<AddDataPage> {
                   ),
                   TextFormField(
                     controller: internshipContactController,
-                    decoration: const InputDecoration(labelText: "Contact Number"),
+                    decoration:
+                        const InputDecoration(labelText: "Contact Number"),
                   ),
                   TextFormField(
                     controller: internshipDescriptionController,

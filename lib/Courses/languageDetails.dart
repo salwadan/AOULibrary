@@ -17,9 +17,8 @@ class _LanguagedetailsState extends State<Languagedetails> {
   List<String> fetchedLectures = [];
   List<String> fetchedSummaries = [];
   List<String> fetchedExams = [];
-  bool isLoading = true;
   String? fetchedOverview; // For storing the overview text
-  bool isOverviewExpanded = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -63,6 +62,7 @@ class _LanguagedetailsState extends State<Languagedetails> {
       return ['Unnamed Item'];
     }
   }
+
   void _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -95,71 +95,43 @@ class _LanguagedetailsState extends State<Languagedetails> {
                       children: [
                         ListView(
                           children: [
+                            // Overview Section
+                            ClassificationItem(
+                              title: "Overview",
+                              items: fetchedOverview == null
+                                  ? ['No Overview Available']
+                                  : [fetchedOverview!],
+                              onItemTap: (item) {
+                                // Do nothing; overview is static text
+                              },
+                            ),
+                            // Lecture Section
                             ClassificationItem(
                               title: "Lecture",
                               items: fetchedLectures.isEmpty
                                   ? ['No Lectures Available']
                                   : fetchedLectures,
-                                   onItemTap: (url) => _launchURL(url),
+                              onItemTap: (url) => _launchURL(url),
                             ),
+                            // Summary Section
                             ClassificationItem(
                               title: "Summary",
                               items: fetchedSummaries.isEmpty
                                   ? ['No Summaries Available']
                                   : fetchedSummaries,
+                              onItemTap: (url) => _launchURL(url),
                             ),
+                            // Old Exam Section
                             ClassificationItem(
                               title: "Old Exam",
                               items: fetchedExams.isEmpty
                                   ? ['No Old Exams Available']
                                   : fetchedExams,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isOverviewExpanded = !isOverviewExpanded;
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Overview",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    if (isOverviewExpanded)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 8.0),
-                                        child: Text(
-                                          fetchedOverview ?? 'No Overview Available',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
+                              onItemTap: (url) => _launchURL(url),
                             ),
                           ],
                         ),
+                        // Feedback Section
                         Comments(courseId: widget.courseName),
                       ],
                     ),

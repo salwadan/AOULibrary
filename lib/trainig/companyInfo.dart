@@ -86,7 +86,7 @@ class Companyinfo extends StatelessWidget {
                     children: [
                       Text(companyName,
                           style: TextStyle(
-                              fontSize: 34)), // Displaying company name
+                              fontSize: 30)), // Displaying company name
                       Text(city,
                           style: TextStyle(
                               fontSize: 16,
