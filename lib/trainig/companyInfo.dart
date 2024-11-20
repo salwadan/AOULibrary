@@ -62,9 +62,10 @@ class Companyinfo extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.3, // 30% of screen width
                 height: MediaQuery.of(context).size.width * 0.3, // Same value for height
                 decoration: BoxDecoration(
+                   border: Border.all(color: Colors.black26, width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blue,
+                      color: const Color.fromARGB(255, 255, 255, 255),
                       spreadRadius: 2,
                       blurRadius: 6,
                     ),
@@ -74,7 +75,7 @@ class Companyinfo extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0), // Optional corner radius
                   child: Image.network(
                     imageUrl,
-                    fit: BoxFit.cover,  // Blur radius of the shadow
+                    fit: BoxFit.contain,  // Blur radius of the shadow
                             )
               ),),
               

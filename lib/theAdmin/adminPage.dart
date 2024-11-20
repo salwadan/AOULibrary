@@ -4,6 +4,7 @@ import 'package:salwa_app/auth/login.dart';
 import 'package:salwa_app/theAdmin/addDataPage.dart';
 import 'package:salwa_app/theAdmin/deletePage.dart';
 import 'package:salwa_app/theAdmin/modifyPage.dart';
+import 'package:salwa_app/homepage.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({Key? key}) : super(key: key);
@@ -77,6 +78,19 @@ class AdminPage extends StatelessWidget {
                 );
               },
               child: const Text("Delete Data"),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) =>  Homepage()),
+                );
+              },
+              child: const Text("Go to Home Page"),
             ),
           ],
         ),
