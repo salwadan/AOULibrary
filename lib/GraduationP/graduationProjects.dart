@@ -1,192 +1,210 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
-import 'package:salwa_app/GraduationP/pageOfProject.dart';
-import 'package:salwa_app/dashboard.dart'; // Adjust as needed
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:salwa_app/GraduationP/projectPage.dart';
 
 class Graduationprojects extends StatefulWidget {
   const Graduationprojects({super.key});
 
   @override
-  State<Graduationprojects> createState() => _MyWidgetState();
+  State<Graduationprojects> createState() => _GraduationprojectsState();
 }
 
-class _MyWidgetState extends State<Graduationprojects> {
-  List projectData = []; // List to hold project data fetched from Firestore
-  int index = 0;
+class _GraduationprojectsState extends State<Graduationprojects> {
+  // List to store project data fetched from Firestore
+  List<Map<String, dynamic>> projectData = [];
+  List<Map<String, dynamic>> filteredData = []; // Filtered project data
+  String selectedCategory = 'All'; // Selected category for filtering
 
   @override
   void initState() {
     super.initState();
     fetchProjectData(); // Fetch data when the widget is initialized
   }
-  
 
   // Function to fetch project data from Firestore
   Future<void> fetchProjectData() async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('graduation_projects') // Get documents from Firestore
+          .collection('graduation_projects')
           .get();
-      List<QueryDocumentSnapshot> docs = snapshot.docs;
 
-      // Map fetched documents to a list of project details
       setState(() {
-        projectData = docs
-            .map((doc) => {
-                  'project Name': doc['project_name'], // Get project_name field
-                  'student name': doc['student_name'], // Get student_name field
-                  'image': doc[
-                      'image_url'], // Assuming image_url field contains the image URL
-                })
-            .toList();
+        projectData = snapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return {
+            'id': doc.id,
+            'project_name': data['project_name'] ?? 'N/A',
+            'student_name': data['student_name'] ?? 'N/A',
+            'image_url': data['image_url'] ?? '',
+            'description': data['description'] ?? 'No description available.',
+            'programming_language':
+                data['programming_language'] ?? 'Not specified',
+            'project_type': data['project_type'] ?? 'Unknown Type',
+          };
+        }).toList();
+        filteredData = projectData; // Initialize filtered data
       });
     } catch (e) {
-      print("Failed to fetch project data: $e"); // Handle any errors
+      print("Failed to fetch project data: $e");
     }
+  }
+
+  // Function to filter project data by category, ignoring case sensitivity
+  void filterProjects(String category) {
+    setState(() {
+      if (category == 'All') {
+        filteredData = projectData;
+      } else {
+        filteredData = projectData
+            .where((project) =>
+                project['project_type'].toString().toLowerCase() ==
+                category.toLowerCase())
+            .toList();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height; // Get screen height
-    var screenWidth = MediaQuery.of(context).size.width; // Get screen width
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Graduation Projects'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: ProjectSearchDelegate(projectData),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Dropdown menu for filtering
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<String>(
+              value: selectedCategory,
+              isExpanded: true,
+              items: ['All', 'Application', 'Website', 'AI', 'Robot', 'Hardware']
+                  .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    selectedCategory = value;
+                  });
+                  filterProjects(value);
+                }
+              },
+            ),
+          ),
+          // Display filtered projects or a message when no data is available
+          Expanded(
+            child: filteredData.isEmpty
+                ? const Center(
+                    child: Text(
+                      "No projects available for the selected category.",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : ListView.separated(
+                    itemCount: filteredData.length,
+                    itemBuilder: (context, index) {
+                      final project = filteredData[index];
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: true,
-          onTap: (val) {
-            setState(() {
-              index = val; // Update current index
-            });
-          },
-          currentIndex: index,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ),
-        appBar: AppBar(
-          title: Text('Graduation Projects'),
-          actions: [
-            PopupMenuButton(
-              elevation: 10,
-              onSelected: (val) {
-                print(val);
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(child: Text('filter'), value: 'filter'),
-                const PopupMenuItem(child: Text('search'), value: 'search'),
-              ],
-            ),
-            IconButton(
-              onPressed: () {
-                showSearch(
-                    context: context, delegate: CustomeSearch()); // Show search
-              },
-              icon: Icon(Icons.search),
-            )
-          ],
-        ),
-        body: projectData.isEmpty
-            ? const Center(
-                child:
-                    CircularProgressIndicator()) // Show loading indicator if data is empty
-            : ListView.separated(
-                itemCount: projectData.length, // Use projectData length
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => Pageofproject(
-                            projectName: projectData[index]
-                                ['project_name'], // Pass project name
-                            studentName: projectData[index]
-                                ['student_name'], // Pass student name
-                            description: projectData[index]
-                                ['description'], // Pass project description
-                            imageUrl: projectData[index]
-                                ['image_url'], // Pass image URL
-                            programmingLanguage: projectData[index][
-                                'programming_language'], // Pass programming language
-                           // Placeholder for student email
-                          ), // Navigate to project details page
+                      return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => Projectpage(
+                                projectId: project['id'],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black26, width: 3),
+                            color: Colors.white,
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                spreadRadius: 1,
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              ListTile(
+                                title: Text(project['project_name']),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("By: ${project['student_name']}"),
+                                    Text("Type: ${project['project_type']}"),
+                                  ],
+                                ),
+                                trailing: const Icon(Icons.arrow_forward_ios),
+                                leading: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(70),
+                                  ),
+                                  width: 57,
+                                  height: 57,
+                                  child: Image.network(
+                                    project['image_url'],
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.broken_image,
+                                        size: 50,
+                                        color: Colors.grey,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
-                    child: Container(
-                      margin: EdgeInsets.only(top: 5),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black26, width: 3),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            spreadRadius: 1,
-                            blurRadius: 6,
-                          ),
-                        ],
-                      ),
-                      child: Column(children: [
-                        ListTile(
-                          title: Text(projectData[index][
-                              'project Name']), // Use project name from Firestore
-                          subtitle: Text(projectData[index][
-                              'student name']), // Use student name from Firestore
-                          trailing: Icon(Icons.arrow_forward_ios),
-                          leading: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(70),
-                            ),
-                            width: 57,
-                            height: 57,
-                            child: Image.network(
-                              projectData[index]
-                                  ['image'], // Use Image.network for URLs
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ]),
+                    separatorBuilder: (context, i) => const Divider(
+                      color: Colors.white,
+                      height: 4,
                     ),
-                  );
-                },
-                separatorBuilder: (context, i) {
-                  return Divider(
-                    color: Colors.white,
-                    height: 4,
-                  );
-                },
-              ),
+                  ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class CustomeSearch extends SearchDelegate {
-  List Projects = [
-    'Volunteer',
-    'Library',
-    'Game',
-    'Cars'
-  ]; // Sample project names for search
-  List? filterList; // List to hold filtered results
+class ProjectSearchDelegate extends SearchDelegate {
+  final List<Map<String, dynamic>> projectData;
+
+  ProjectSearchDelegate(this.projectData);
 
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
       IconButton(
+        icon: const Icon(Icons.clear),
         onPressed: () {
-          query = ""; // Clear the search query
+          query = '';
         },
-        icon: Icon(Icons.close),
       ),
     ];
   }
@@ -194,59 +212,47 @@ class CustomeSearch extends SearchDelegate {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
-        close(context, null); // Close the search
+        close(context, null);
       },
-      icon: Icon(Icons.arrow_back),
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    return Text(''); // Placeholder for search results
+    final results = projectData
+        .where((project) =>
+            project['project_name'].toString().toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return results.isEmpty
+        ? const Center(
+            child: Text("No projects found matching your search."),
+          )
+        : ListView.builder(
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              final project = results[index];
+              return ListTile(
+                title: Text(project['project_name']),
+                subtitle: Text("By: ${project['student_name']}"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => Projectpage(
+                        projectId: project['id'],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    if (query.isEmpty) {
-      return ListView.builder(
-        itemCount: Projects.length,
-        itemBuilder: (context, i) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Text(
-                "${Projects[i]}",
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          );
-        },
-      );
-    } else {
-      // Filter the projects based on the search query
-      filterList =
-          Projects.where((element) => element.startsWith(query)).toList();
-      return ListView.builder(
-        itemCount: filterList!.length,
-        itemBuilder: (context, i) {
-          return InkWell(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Dashboard())); // Navigate on tap
-            },
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Text(
-                  "${filterList![i]}",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    }
+    return buildResults(context);
   }
 }

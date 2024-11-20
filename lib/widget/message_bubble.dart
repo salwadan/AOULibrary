@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // A MessageBubble for showing a single chat message on the ChatScreen.
 class MessageBubble extends StatelessWidget {
   // Create a message bubble which is meant to be the first in the sequence.
-  //when first message we need all information about user
+  // When it's the first message, we need all information about the user.
   const MessageBubble.first({
     super.key,
     required this.userImage,
@@ -12,23 +12,19 @@ class MessageBubble extends StatelessWidget {
     required this.isMe,
   }) : isFirstInSequence = true;
 
-  // Create a amessage bubble that continues the sequence.
-  //not first message of user but need to messgae and virble
+  // Create a message bubble that continues the sequence.
+  // Not the first message from the user; only requires the message and the "isMe" flag.
   const MessageBubble.next({
-
     super.key,
     required this.message,
-    required this.isMe, //varible boolean to identifier if me send message or other people
+    required this.isMe, // Variable boolean to identify if it's sent by the current user.
   })  : isFirstInSequence = false,
         userImage = null,
         username = null;
 
   // Whether or not this message bubble is the first in a sequence of messages
   // from the same user.
-  // Modifies the message bubble slightly for these different cases - only
-  // shows user image for the first message from the same user, and changes
-  // the shape of the bubble for messages thereafter.
-  final bool isFirstInSequence;  //Variable to know if  message is first message
+  final bool isFirstInSequence;
 
   // Image of the user to be displayed next to the bubble.
   // Not required if the message is not the first in a sequence.
@@ -68,11 +64,11 @@ class MessageBubble extends StatelessWidget {
           child: Row(
             // The side of the chat screen the message should show at.
             mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
               Column(
                 crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   // First messages in the sequence provide a visual buffer at
                   // the top.
@@ -96,8 +92,10 @@ class MessageBubble extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       color: isMe
-                          ? Colors.grey[300]
-                          : theme.colorScheme.secondary.withAlpha(200),
+                          ? Colors
+                              .blue[100] // User's messages will be light blue
+                          : theme.colorScheme.secondary
+                              .withOpacity(0.9), // Other user's messages
                       // Only show the message bubble's "speaking edge" if first in
                       // the chain.
                       // Whether the "speaking edge" is on the left or right depends

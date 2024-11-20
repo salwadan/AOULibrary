@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart'; // Importing Flutter's material design package
 import 'package:url_launcher/url_launcher.dart';
@@ -87,7 +86,7 @@ class Companyinfo extends StatelessWidget {
                     children: [
                       Text(companyName,
                           style: TextStyle(
-                              fontSize: 34)), // Displaying company name
+                              fontSize: 30)), // Displaying company name
                       Text(city,
                           style: TextStyle(
                               fontSize: 16,

@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:salwa_app/components/custombuttonauth.dart';
 import 'package:salwa_app/components/customlogoauth.dart';
 import 'package:salwa_app/components/textformfield.dart';
 import 'package:salwa_app/homepage.dart';
+import 'package:salwa_app/theAdmin/adminPage.dart'; // Import AdminPage here
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -16,9 +18,8 @@ class _LoginState extends State<Login> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   String? _message;
-  bool _isSuccessMessage = false; // New state variable to control message color
+  bool _isSuccessMessage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,6 @@ class _LoginState extends State<Login> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(height: 1),
                   const CustomLogoAuth(),
                   Container(height: 20),
                   const Text(
@@ -42,8 +42,7 @@ class _LoginState extends State<Login> {
                   ),
                   Container(height: 20),
                   const Text("Email",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Container(height: 10),
                   CustomTextForm(
                     hinttext: "Enter your Email",
@@ -59,12 +58,12 @@ class _LoginState extends State<Login> {
                   ),
                   Container(height: 10),
                   const Text("Password",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Container(height: 10),
                   CustomTextForm(
                     hinttext: "Enter your Password",
                     mycontroller: password,
+                    obscureText: true,
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return "The field can't be empty";
@@ -77,7 +76,7 @@ class _LoginState extends State<Login> {
                       if (email.text.isEmpty) {
                         setState(() {
                           _message = 'Please enter your email first';
-                          _isSuccessMessage = false; // Ensure red color
+                          _isSuccessMessage = false;
                         });
                         return;
                       }
@@ -86,33 +85,31 @@ class _LoginState extends State<Login> {
                         await FirebaseAuth.instance
                             .sendPasswordResetEmail(email: email.text);
                         setState(() {
-                          _message =
-                              'A link to reset your password has been sent to you';
-                          _isSuccessMessage =
-                              true; // Set to true for green color
+                          _message = 'A link to reset your password has been sent to you';
+                          _isSuccessMessage = true;
                         });
                       } catch (e) {
                         setState(() {
                           _message = 'Make sure the entered email is correct';
-                          _isSuccessMessage = false; // Ensure red color
+                          _isSuccessMessage = false;
                         });
                       }
                     },
                     child: Container(
                       margin: const EdgeInsets.only(top: 10, bottom: 20),
                       alignment: Alignment.topRight,
-                      child: const Text("Forgot password?",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 14)),
+                      child: const Text(
+                        "Forgot password?",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                   ),
-                  if (_message != null) // Display the message
+                  if (_message != null)
                     Text(
                       _message!,
                       style: TextStyle(
-                        color: _isSuccessMessage
-                            ? Colors.green
-                            : Colors.red, // Green for success
+                        color: _isSuccessMessage ? Colors.green : Colors.red,
                       ),
                     ),
                 ],
@@ -127,31 +124,45 @@ class _LoginState extends State<Login> {
                     final credential = await FirebaseAuth.instance
                         .signInWithEmailAndPassword(
                             email: email.text, password: password.text);
-                    if (credential.user!.emailVerified) {
+
+                    // Check if the email exists in the admin collection
+                    final adminSnapshot = await FirebaseFirestore.instance
+                        .collection('admin')
+                        .where('email', isEqualTo: email.text)
+                        .get();
+
+                    if (adminSnapshot.docs.isNotEmpty) {
+                      // Navigate to AdminPage if email is found in the admin collection
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const AdminPage(),
+                        ),
+                      );
+                    } else if (credential.user!.emailVerified) {
+                      // Navigate to regular user homepage if email is verified and not an admin
                       Navigator.of(context).pushReplacementNamed("homepage");
                     } else {
-                      FirebaseAuth.instance.currentUser!
-                          .sendEmailVerification();
+                      FirebaseAuth.instance.currentUser!.sendEmailVerification();
                       setState(() {
                         _message = 'Please verify your email.';
-                        _isSuccessMessage = false; // Red color for this message
+                        _isSuccessMessage = false;
                       });
                     }
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'user-not-found') {
                       setState(() {
                         _message = 'The email address is not registered.';
-                        _isSuccessMessage = false; // Red color for error
+                        _isSuccessMessage = false;
                       });
                     } else if (e.code == 'wrong-password') {
                       setState(() {
                         _message = 'Incorrect password provided.';
-                        _isSuccessMessage = false; // Red color for error
+                        _isSuccessMessage = false;
                       });
                     }
                   }
                 } else {
-                  print("Not valid");
+                  print("Form is not valid");
                 }
               },
             ),
@@ -183,9 +194,13 @@ class _LoginState extends State<Login> {
             CustomButtonAuth(
               title: "Continue as a guest",
               buttonColor: const Color.fromARGB(255, 56, 101, 217),
-              onPressed: () {  Navigator.of(context).pushReplacement(    
-                MaterialPageRoute(        
-                  builder: (context) =>  Homepage(isGuest: true),    ),  );},
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => Homepage(isGuest: true),
+                  ),
+                );
+              },
             ),
           ],
         ),

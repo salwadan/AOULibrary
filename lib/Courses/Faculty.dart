@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:salwa_app/Courses/LanguageCo.dart';
 import 'package:salwa_app/Courses/businessCo.dart';
 import 'package:salwa_app/Courses/computerCo.dart';
@@ -26,7 +25,7 @@ final List<String> faculty = [
 List images = [
   "assets/computerFaculty.png",
   "assets/Buisness.png",
-  "assets/languages.png"
+  "assets/language.jpeg"
 ];
 
 class _FacultyState extends State<Faculty> {
@@ -36,7 +35,7 @@ class _FacultyState extends State<Faculty> {
     var screenWiidth = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 194, 214, 231),
+          backgroundColor: const Color.fromRGBO(194, 214, 231, 1),
           title: Text(
             'University majors ',
             style: const TextStyle(color: Colors.white, fontSize: 20),
@@ -53,7 +52,7 @@ class _FacultyState extends State<Faculty> {
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 22, vertical: 10),
                   width: MediaQuery.of(context).size.width,
-                  height: screenHeight /3,
+                  height: screenHeight / 3,
                   decoration: BoxDecoration(
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(15),
@@ -95,7 +94,9 @@ class _FacultyState extends State<Faculty> {
                                 maxLines: 1,
                                 presetFontSizes: [50, 40, 30, 25, 20],
                                 wrapWords: false,
-                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
                               trailing: Icon(
                                 Icons.arrow_forward_outlined,
