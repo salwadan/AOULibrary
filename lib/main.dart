@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,12 @@ class MyApp extends StatelessWidget {
           
             backgroundColor:  const Color.fromARGB(255, 194, 214, 231),
             titleTextStyle: TextStyle(
-                color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
+                color: const Color.fromARGB(255, 37, 55, 187), fontSize: 20, fontWeight: FontWeight.bold),
                 
             iconTheme: IconThemeData(color: Colors.blue)),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        
         
       ),
       home: (FirebaseAuth.instance.currentUser != null &&

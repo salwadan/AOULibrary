@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart'; 
-import 'package:cloud_firestore/cloud_firestore.dart'; 
-import 'package:salwa_app/trainig/companyInfo.dart'; 
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:salwa_app/trainig/companyInfo.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 // Defining a StatefulWidget named Internship
@@ -13,6 +13,9 @@ class Internship extends StatefulWidget {
 
 class _InternshipState extends State<Internship> {
   List internshipData = []; // List to hold internship data fetched from Firestore
+  List filteredInternshipData = []; // List to hold filtered internship data
+  String selectedCity = "All"; // Default filter value
+  bool isLoading = true; // Loading state indicator
 
   @override
   void initState() {
@@ -33,31 +36,48 @@ class _InternshipState extends State<Internship> {
       setState(() {
         internshipData = docs
             .map((doc) => {
-                  'company_name':
-                      doc['company_name'], // Extracting company name
+                  'company_name': doc['company_name'], // Extracting company name
                   'city': doc['city'], // Extracting city
-                  'contact_number':
-                      doc['contact_number'], // Extracting contact number
-                  'email':
-                      doc['Email'], // Extracting email (note the key 'Email')
+                  'contact_number': doc['contact_number'], // Extracting contact number
+                  'email': doc['Email'], // Extracting email
                   'description': doc['description'], // Extracting description
                   'image_url': doc['image_url'], // Extracting image URL
                   'location': doc['location'], // Extracting location
                 })
             .toList(); // Converting the list of documents to a list of maps
+        filteredInternshipData = internshipData; // Initial data for filtered list
+        isLoading = false; // Data has been loaded
       });
     } catch (e) {
-      print("Failed to fetch internship data: $e"); // Printing error message if fetching fails
+      print("Failed to fetch internship data: $e");
+      setState(() {
+        isLoading = false; // Data fetching complete with error
+      });
     }
+  }
+
+  // Function to filter internships by city
+  void filterByCity(String city) {
+    setState(() {
+      if (city == "All") {
+        filteredInternshipData = internshipData;
+      } else {
+        filteredInternshipData = internshipData
+            .where((data) => data['city'] == city)
+            .toList();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+     var screenHeight = MediaQuery.of(context).size.height;
+    var screenWiidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: const AutoSizeText(
+        title:  AutoSizeText(
           'Internship',
-          presetFontSizes: [40, 30],
+          presetFontSizes: [screenWiidth >= 700? 30 : 25],
         ),
         actions: [
           IconButton(
@@ -69,78 +89,103 @@ class _InternshipState extends State<Internship> {
               );
             },
           ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              setState(() {
+                selectedCity = value;
+                filterByCity(selectedCity);
+              });
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: "All", child: Text("All")),
+              const PopupMenuItem(value: "Jeddah", child: Text("Jeddah")),
+              const PopupMenuItem(value: "Riyadh", child: Text("Riyadh")),
+              const PopupMenuItem(value: "Dammam", child: Text("Dammam")),
+              const PopupMenuItem(value: "Madinah", child: Text("Madinah")),
+            ],
+            icon: const Icon(Icons.filter_list),
+          ),
         ],
       ),
-      body: internshipData.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.separated(
-              itemCount: internshipData.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => Companyinfo(
-                          companyName: internshipData[index]['company_name'] ?? 'N/A',
-                          city: internshipData[index]['city'] ?? 'N/A',
-                          email: internshipData[index]['email'] ?? 'N/A',
-                          phone: internshipData[index]['contact_number'] ?? 'N/A',
-                          location: internshipData[index]['location'] ?? 'N/A',
-                          about: internshipData[index]['description'] ?? 'No description available.',
-                          imageUrl: internshipData[index]['image_url'] ?? '',
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator()) // Show loading spinner
+          : filteredInternshipData.isEmpty
+              ? const Center(
+                  child: Text(
+                    "No internships found.",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ) // Show message when no data is found
+              : ListView.separated(
+                  itemCount: filteredInternshipData.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => Companyinfo(
+                              companyName: filteredInternshipData[index]['company_name'] ?? 'N/A',
+                              city: filteredInternshipData[index]['city'] ?? 'N/A',
+                              email: filteredInternshipData[index]['email'] ?? 'N/A',
+                              phone: filteredInternshipData[index]['contact_number'] ?? 'N/A',
+                              location: filteredInternshipData[index]['location'] ?? 'N/A',
+                              about: filteredInternshipData[index]['description'] ?? 'No description available.',
+                              imageUrl: filteredInternshipData[index]['image_url'] ?? '',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.only(top: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black26, width: 3),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              spreadRadius: 1,
+                              blurRadius: 6,
+                            )
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: AutoSizeText(
+                                filteredInternshipData[index]['company_name'],
+                                presetFontSizes: [screenWiidth >= 700? 50 : 25],
+                                maxLines: 1,
+                              ),
+                              subtitle: AutoSizeText(filteredInternshipData[index]['city'],
+                               presetFontSizes: [screenWiidth >= 700? 30 : 15],
+                              ),
+                              trailing: const Icon(Icons.arrow_forward_ios),
+                              leading: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadiusDirectional.circular(10),
+                                  border: Border.all(color: const Color.fromARGB(255, 250, 247, 247)),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                    )
+                                  ],
+                                ),
+                                child: Image.network(filteredInternshipData[index]['image_url']),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.only(top: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black26, width: 3),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          spreadRadius: 1,
-                          blurRadius: 6,
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          title: AutoSizeText(
-                            internshipData[index]['company_name'],
-                            presetFontSizes: [40, 30, 20],
-                            maxLines: 1,
-                          ),
-                          subtitle: Text(internshipData[index]['city']),
-                          trailing: const Icon(Icons.arrow_forward_ios),
-                          leading: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadiusDirectional.circular(10),
-                              border: Border.all(color: const Color.fromARGB(255, 205, 202, 202)),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                )
-                              ],
-                            ),
-                            child: Image.network(internshipData[index]['image_url']),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-              separatorBuilder: (context, i) {
-                return const Divider(color: Colors.white, height: 4);
-              },
-            ),
+                  separatorBuilder: (context, i) {
+                    return const Divider(color: Colors.white, height: 4);
+                  },
+                ),
     );
   }
 }
@@ -213,7 +258,12 @@ class InternshipSearchDelegate extends SearchDelegate {
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text("No results found"));
+          return const Center(
+            child: Text(
+              "No results found.",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          );
         }
 
         var results = snapshot.data!;

@@ -1,4 +1,5 @@
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart'; // Importing Flutter's material design package
 import 'package:url_launcher/url_launcher.dart';
 
@@ -45,9 +46,13 @@ class Companyinfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     var screenHeight = MediaQuery.of(context).size.height;
+    var screenWiidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Company Info"), // Setting the title of the app bar
+        title: AutoSizeText("Company Info",
+          presetFontSizes: [screenWiidth >= 700? 30 : 25],
+        ), // Setting the title of the app bar
       ),
       body: SafeArea(
         child: Padding(
@@ -62,9 +67,10 @@ class Companyinfo extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.3, // 30% of screen width
                 height: MediaQuery.of(context).size.width * 0.3, // Same value for height
                 decoration: BoxDecoration(
+                   border: Border.all(color: Colors.black26, width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blue,
+                      color: const Color.fromARGB(255, 255, 255, 255),
                       spreadRadius: 2,
                       blurRadius: 6,
                     ),
@@ -74,7 +80,7 @@ class Companyinfo extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0), // Optional corner radius
                   child: Image.network(
                     imageUrl,
-                    fit: BoxFit.cover,  // Blur radius of the shadow
+                    fit: BoxFit.contain,  // Blur radius of the shadow
                             )
               ),),
               
@@ -84,12 +90,12 @@ class Companyinfo extends StatelessWidget {
                     crossAxisAlignment:
                         CrossAxisAlignment.start, // Aligning text to the start
                     children: [
-                      Text(companyName,
+                      AutoSizeText(companyName,
+                          presetFontSizes: [screenWiidth >= 700? 50 : 25],), // Displaying company name
+                      AutoSizeText(city,
+                        presetFontSizes: [screenWiidth >= 700? 30 : 15],
                           style: TextStyle(
-                              fontSize: 30)), // Displaying company name
-                      Text(city,
-                          style: TextStyle(
-                              fontSize: 16,
+                              
                               fontWeight: FontWeight.w400,
                               color: Colors.grey)), // Displaying city
                       SizedBox(
@@ -101,7 +107,7 @@ class Companyinfo extends StatelessWidget {
                           InkWell(
                               onTap: () => _launchurl(
                                   Uri.parse('mailto: $email'), false),
-                              child: CustomIconStyle(icon: Icons.mail)),
+                              child: CustomIconStyle(icon: Icons.mail, )),
                           SizedBox(width: 8), // Adding space between icons
                           // Phone icon
                           InkWell(
@@ -123,14 +129,14 @@ class Companyinfo extends StatelessWidget {
                 
               
               SizedBox(height: 32), // Adding space before the about section
-              Text("About",
+              AutoSizeText("About",
+                presetFontSizes:[screenWiidth >= 700? 50 : 35],
                   style: TextStyle(
-                      fontSize: 34,
+                      
                       fontWeight: FontWeight.w500)), // Displaying "About" title
               SizedBox(height: 8), // Adding space between title and description
-              Text(about,
-                  style:
-                      TextStyle(fontSize: 20)), // Displaying about description
+              AutoSizeText(about,
+                    presetFontSizes: [screenWiidth >= 700? 40 : 20],), // Displaying about description
             
           ],),),
         ),
@@ -146,12 +152,13 @@ class CustomIconStyle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     var screenWiidth = MediaQuery.of(context).size.width;
     return Container(
       child: Icon(icon,
           color: const Color.fromARGB(255, 4, 64, 112),
-          size: 32), // Displaying the icon with specific color and size
-      height: 48, // Setting the height of the container
-      width: 48, // Setting the width of the container
+          size: screenWiidth >= 700? 54: 32,), // Displaying the icon with specific color and size
+      height: screenWiidth >= 700? 70: 48, // Setting the height of the container
+      width: screenWiidth >= 700? 70: 48, // Setting the width of the container
       decoration: BoxDecoration(
         color: Color.fromARGB(
             255, 209, 231, 251), // Background color of the container
