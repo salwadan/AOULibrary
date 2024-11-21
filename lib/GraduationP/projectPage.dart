@@ -94,7 +94,7 @@ class _ProjectpageState extends State<Projectpage> {
                                 "By: ${project['student_name'] ?? 'N/A'}", // Student name
                                 style: const TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey,
+                                  color: Colors.blue,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -102,7 +102,7 @@ class _ProjectpageState extends State<Projectpage> {
                                 "Type: ${project['project_type'] ?? 'Unknown Type'}", // Project type
                                 style: const TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey,
+                                  color: Colors.blue,
                                 ),
                               ),
                             ],
@@ -116,7 +116,7 @@ class _ProjectpageState extends State<Projectpage> {
                     const Text(
                       "About",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8), // Space between title and content
                     Text(
@@ -129,7 +129,7 @@ class _ProjectpageState extends State<Projectpage> {
                     const Text(
                       "Programming Language",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(

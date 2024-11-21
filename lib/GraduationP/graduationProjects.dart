@@ -146,11 +146,11 @@ class _GraduationprojectsState extends State<Graduationprojects> {
                           child: Column(
                             children: [
                               ListTile(
-                                title: Text(project['project_name']),
+                                title: Text(project['project_name'],style: TextStyle(fontWeight: FontWeight.bold)),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("By: ${project['student_name']}"),
+                                    Text("By: ${project['student_name']}",style: TextStyle(color:Colors.blue),),
                                     Text("Type: ${project['project_type']}"),
                                   ],
                                 ),

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Comments extends StatefulWidget {
-  final String courseId; // Course ID to filter comments
+  final String courseId; // Course ID to filter comments to specific to a course
   const Comments({Key? key, required this.courseId}) : super(key: key);
 
   @override
@@ -11,18 +11,21 @@ class Comments extends StatefulWidget {
 }
 
 class _CommentsState extends State<Comments> {
-  final TextEditingController _commentController = TextEditingController();
-  String username = 'Anonymous';
+  final TextEditingController _commentController = TextEditingController(); // Controller for the comment input field
+  String username = 'Anonymous'; // Default username if not fetched
+
 
   @override
   void initState() {
     super.initState();
-    fetchUsername(); // Fetch the current user's username
+    fetchUsername(); // Fetch the current user's username , logged-in user's username
   }
 
-  // Fetch the username of the logged-in user
+
+  // Function to fetch the username of the logged-in user
+
   Future<void> fetchUsername() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;   // Get the current user
     if (user != null) {
       // Query the 'users' collection using the user's email to find the username
       final userDocs = await FirebaseFirestore.instance
@@ -31,22 +34,23 @@ class _CommentsState extends State<Comments> {
           .get();
 
       if (userDocs.docs.isNotEmpty) {
-        // Set the username from the fetched document data
+        // Set the username from the fetched document data , If data exists, update the username
         setState(() {
           username = userDocs.docs.first['name'] ?? 'Anonymous';
         });
-        print("Fetched username: $username"); // Debugging statement
+        print("Fetched username: $username"); // Debugging statement print fetched username
+
       } else {
-        print("No user data found for this email.");
+        print("No user data found for this email.");  // Debugging: no user data
       }
     } else {
-      print("User is not logged in.");
+      print("User is not logged in."); // Debugging: user not logged in
     }
   }
 
-  // Function to add a comment to Firestore
+  // Function to add a new comment to Firestore
   Future<void> addComment() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;   // Get the current user
     if (user == null) {
       // If the user is not logged in, show a dialog to prompt them to log in
       showDialog(
@@ -64,21 +68,25 @@ class _CommentsState extends State<Comments> {
           ],
         ),
       );
-      return; // Do not proceed with adding the comment
+      return; // Do not proceed with adding the comment Exit the function if the user is not logged in
     }
 
-    final commentText = _commentController.text.trim();
+
+    final commentText = _commentController.text.trim();  // Get and trim the comment text
+
     if (commentText.isNotEmpty) {
       try {
+        // Add a new comment document to the 'comments' collection in Firestore
         await FirebaseFirestore.instance.collection('comments').add({
-          'course_id': widget.courseId,
-          'text': commentText,
-          'time': FieldValue.serverTimestamp(),
-          'username': username,
+          'course_id': widget.courseId, // Associate the comment with the course
+          'text': commentText, // Comment text
+          'time': FieldValue.serverTimestamp(), // Timestamp of the comment
+          'username': username, // Username of the commenter
         });
-        _commentController.clear();
+        _commentController.clear(); // Clear the input field after submission
 
-        // Show a confirmation Snackbar
+
+        // Show a confirmation message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Feedback submitted successfully!'),
@@ -95,7 +103,7 @@ class _CommentsState extends State<Comments> {
         );
       }
     } else {
-      // Show a Snackbar if the comment field is empty
+      // Show a warning message if the input field is empty
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please enter your feedback before submitting.'),
@@ -110,72 +118,75 @@ class _CommentsState extends State<Comments> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          // Comment input field
+          // Comment input field at the bottom
           Positioned(
             bottom: 0,
             child: Container(
-              color: Colors.white,
-              height: 60,
-              width: MediaQuery.of(context).size.width,
+              color: Colors.white, // Background color for the input field
+              height: 60, // Height of the input field container
+              width: MediaQuery.of(context).size.width, // Height of the input field container
               child: Row(
                 children: <Widget>[
                   Expanded(
                     child: TextFormField(
-                      controller: _commentController,
+                      controller: _commentController, // Bind input controller
                       decoration: InputDecoration(
-                        hintText: "Enter your feedback here",
+                        hintText: "Enter your feedback here", // Placeholder text
                         filled: true,
-                        fillColor: Colors.grey[200],
-                        contentPadding: EdgeInsets.all(10),
+                        fillColor: Colors.grey[200],// Background color of input field
+                        contentPadding: EdgeInsets.all(10), // Padding inside the input field
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.grey), // Border color
+
+                          borderRadius: BorderRadius.circular(30), // Rounded corners
                         ),
                       ),
                     ),
                   ),
                   IconButton(
-                    onPressed: addComment,
-                    icon: Icon(Icons.send),
-                    color: Colors.blue,
+                    onPressed: addComment, // Call addComment on button press
+                    icon: Icon(Icons.send),  // Send icon
+                    color: Colors.blue, // Icon color
                   ),
                 ],
               ),
             ),
           ),
 
-          // Display the list of comments
+          // List of comments displayed above the input field
           Positioned(
             top: 10,
-            bottom: 60,
+            bottom: 60,  // Leave space for the input field at the bottom
             child: Container(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width, // Full width of the screen
               child: StreamBuilder(
                 stream: FirebaseFirestore.instance
-                    .collection('comments')
-                    .where('course_id', isEqualTo: widget.courseId)
-                    .orderBy('time',
+                    .collection('comments') // Fetch comments collection
+                    .where('course_id', isEqualTo: widget.courseId) // Filter by course ID
+                    .orderBy('time',   // Order comments by time
                         descending: false) // Order by time (newest first)
                     .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator()); // Show loading indicator
+
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(child: Text("No comments yet."));
+                    return Center(child: Text("No comments yet.")); // Show message if no comments
+
                   }
-                  final comments = snapshot.data!.docs;
+                  final comments = snapshot.data!.docs;   // List of comments
                   return ListView.builder(
-                    itemCount: comments.length,
+                    itemCount: comments.length,  // Total number of comments
                     itemBuilder: (context, index) {
-                      var comment = comments[index];
+                      var comment = comments[index];    // Current comment
                       return ListTile(
-                        leading: CircleAvatar(child: Icon(Icons.person)),
-                        title: Text(comment['username'] ?? 'Anonymous'),
+                        leading: CircleAvatar(child: Icon(Icons.person)), // Placeholder user avatar
+                        title: Text(comment['username'] ?? 'Anonymous'),   // Display username
                         subtitle: Container(
-                          padding: EdgeInsets.all(10),
-                          color: Colors.grey[100],
-                          child: Text(comment['text']),
+                          padding: EdgeInsets.all(10),   // Padding inside the comment box
+                          color: Colors.grey[100],   // Background color for the comment
+                          child: Text(comment['text']),// Display comment text
                         ),
                       );
                     },

@@ -5,7 +5,9 @@ import 'package:salwa_app/Courses/Faculty.dart';
 import 'package:salwa_app/GraduationP/graduationProjects.dart';
 import 'package:salwa_app/Setting/settings_page.dart';
 import 'package:salwa_app/trainig/internship.dart';
-import 'widget/chatScreen.dart';
+import 'Chat/chatScreen.dart';
+
+
 
 class Homepage extends StatefulWidget {
   final bool isGuest;
