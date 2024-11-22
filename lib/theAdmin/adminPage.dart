@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:salwa_app/auth/login.dart';
 import 'package:salwa_app/theAdmin/addDataPage.dart';
 import 'package:salwa_app/theAdmin/deletePage.dart';
@@ -24,10 +24,16 @@ class AdminPage extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 155, 182, 229),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => logout(context),
-            tooltip: "Logout",
-          ),
+  icon: const Icon(Icons.logout),
+  onPressed: () async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const Login()),
+    );
+  },
+  tooltip: "Logout",
+),
+
         ],
       ),
       body: Padding(

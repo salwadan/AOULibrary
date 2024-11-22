@@ -32,17 +32,20 @@ class ModifyPage extends StatelessWidget {
             title: "Courses",
             collectionName: 'courses',
             subCollectionName: 'course_name',
-            fields: ['lecture', 'old_exam', 'summary'],
+            arrayFields: ['lecture', 'old_exam', 'summary'],
+            otherFields: ['overview'],
           ),
           _buildSection(
             title: "Graduation Projects",
             collectionName: 'graduation_projects',
-            fields: ['description', 'image_url', 'programming_language', 'student_name','project_type'],
+            arrayFields: [],
+            otherFields: ['description', 'image_url', 'programming_language', 'student_name', 'project_type'],
           ),
           _buildSection(
             title: "Internships",
             collectionName: 'internships',
-            fields: ['Email', 'city', 'contact_number', 'description', 'image_url', 'location'],
+            arrayFields: [],
+            otherFields: ['Email', 'city', 'contact_number', 'description', 'image_url', 'location', 'company_name'],
           ),
         ],
       ),
@@ -53,7 +56,8 @@ class ModifyPage extends StatelessWidget {
     required String title,
     required String collectionName,
     String? subCollectionName,
-    required List<String> fields,
+    required List<String> arrayFields,
+    required List<String> otherFields,
   }) {
     return ExpansionTile(
       title: Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -79,7 +83,8 @@ class ModifyPage extends StatelessWidget {
                 return _buildDocumentTile(
                   context: context,
                   document: document,
-                  fields: fields,
+                  arrayFields: arrayFields,
+                  otherFields: otherFields,
                 );
               },
             );
@@ -92,14 +97,15 @@ class ModifyPage extends StatelessWidget {
   Widget _buildDocumentTile({
     required BuildContext context,
     required QueryDocumentSnapshot document,
-    required List<String> fields,
+    required List<String> arrayFields,
+    required List<String> otherFields,
   }) {
     final documentId = document.id;
     final reference = document.reference;
 
-    // Create a controller for each field
+    // Controllers for non-array fields
     final Map<String, TextEditingController> controllers = {
-      for (var field in fields)
+      for (var field in otherFields)
         field: TextEditingController(text: document[field]?.toString() ?? ''),
     };
 
@@ -108,7 +114,7 @@ class ModifyPage extends StatelessWidget {
       child: ExpansionTile(
         title: Text("Document: $documentId"),
         children: [
-          ...fields.map(
+          ...otherFields.map(
             (field) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -119,6 +125,41 @@ class ModifyPage extends StatelessWidget {
               );
             },
           ).toList(),
+          ...arrayFields.map((field) {
+            final List<dynamic> fieldValues = document[field] ?? [];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    field,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: fieldValues.length,
+                  itemBuilder: (context, index) {
+                    final controller = TextEditingController(text: fieldValues[index]?.toString());
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                      child: TextFormField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          labelText: "$field #${index + 1}",
+                        ),
+                        onChanged: (newValue) {
+                          fieldValues[index] = newValue;
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          }).toList(),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
@@ -126,7 +167,7 @@ class ModifyPage extends StatelessWidget {
             onPressed: () {
               // Gather updated data from controllers
               final updatedData = {
-                for (var field in fields) field: controllers[field]!.text,
+                for (var field in otherFields) field: controllers[field]!.text,
               };
 
               updateDocument(reference, updatedData);

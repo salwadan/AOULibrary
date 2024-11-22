@@ -8,6 +8,7 @@ import 'package:salwa_app/homepage.dart';
 import 'package:salwa_app/theAdmin/adminPage.dart'; // Import AdminPage here
 
 // Login Page StatefulWidget
+// Represents the login screen
 class Login extends StatefulWidget {
   const Login({super.key});
 
