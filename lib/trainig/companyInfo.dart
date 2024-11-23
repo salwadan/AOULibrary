@@ -91,13 +91,13 @@ class Companyinfo extends StatelessWidget {
                         CrossAxisAlignment.start, // Aligning text to the start
                     children: [
                       AutoSizeText(companyName,
-                          presetFontSizes: [screenWiidth >= 700? 50 : 25],), // Displaying company name
+                          presetFontSizes: [screenWiidth >= 700? 50 : 25], style: TextStyle(fontWeight: FontWeight.bold)), // Displaying company name
                       AutoSizeText(city,
                         presetFontSizes: [screenWiidth >= 700? 30 : 15],
                           style: TextStyle(
                               
                               fontWeight: FontWeight.w400,
-                              color: Colors.grey)), // Displaying city
+                              color:  Color(0xFF2196F3),)), // Displaying city
                       SizedBox(
                           height: 8), // Adding space between text and icons
                       Row(

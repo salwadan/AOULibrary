@@ -45,6 +45,7 @@ class _GraduationprojectsState extends State<Graduationprojects> {
         filteredData = projectData; // Initialize filtered data
       });
     } catch (e) {
+          // Print an error message if fetching data fails
       print("Failed to fetch project data: $e");
     }
   }
@@ -53,8 +54,10 @@ class _GraduationprojectsState extends State<Graduationprojects> {
   void filterProjects(String category) {
     setState(() {
       if (category == 'All') {
+         // Show all projects if the category is 'All'
         filteredData = projectData;
       } else {
+        // Filter projects by matching the 'project_type' field
         filteredData = projectData
             .where((project) =>
                 project['project_type'].toString().toLowerCase() ==
@@ -71,8 +74,10 @@ class _GraduationprojectsState extends State<Graduationprojects> {
         title: const Text('Graduation Projects'),
         actions: [
           IconButton(
+          // Add a search icon in the AppBar
             icon: const Icon(Icons.search),
             onPressed: () {
+              // Show a custom search delegate when the icon is pressed
               showSearch(
                 context: context,
                 delegate: ProjectSearchDelegate(projectData),
@@ -88,7 +93,7 @@ class _GraduationprojectsState extends State<Graduationprojects> {
             padding: const EdgeInsets.all(8.0),
             child: DropdownButton<String>(
               value: selectedCategory,
-              isExpanded: true,
+              isExpanded: true,  // Expand to fill available space
               items: ['All', 'Application', 'Website', 'AI', 'Robot', 'Hardware']
                   .map((category) => DropdownMenuItem(
                         value: category,
@@ -97,6 +102,7 @@ class _GraduationprojectsState extends State<Graduationprojects> {
                   .toList(),
               onChanged: (value) {
                 if (value != null) {
+                  // Update the selected category and filter the projects
                   setState(() {
                     selectedCategory = value;
                   });
@@ -116,16 +122,18 @@ class _GraduationprojectsState extends State<Graduationprojects> {
                     ),
                   )
                 : ListView.separated(
+                  // Create a list of project cards with separators
                     itemCount: filteredData.length,
                     itemBuilder: (context, index) {
                       final project = filteredData[index];
 
                       return InkWell(
                         onTap: () {
+                          // Navigate to the project details page when tapped
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => Projectpage(
-                                projectId: project['id'],
+                                projectId: project['id'], // Pass project ID
                               ),
                             ),
                           );
@@ -162,10 +170,11 @@ class _GraduationprojectsState extends State<Graduationprojects> {
                                   width: 57,
                                   height: 57,
                                   child: Image.network(
-                                    project['image_url'],
+                                    project['image_url'], // Load image from URL
                                     fit: BoxFit.cover,
                                     errorBuilder:
                                         (context, error, stackTrace) {
+                                           // Display a broken image icon if loading fails
                                       return const Icon(
                                         Icons.broken_image,
                                         size: 50,
@@ -192,6 +201,7 @@ class _GraduationprojectsState extends State<Graduationprojects> {
   }
 }
 
+// Custom SearchDelegate to search projects by name
 class ProjectSearchDelegate extends SearchDelegate {
   final List<Map<String, dynamic>> projectData;
 
@@ -200,6 +210,7 @@ class ProjectSearchDelegate extends SearchDelegate {
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
+      // Clear search query
       IconButton(
         icon: const Icon(Icons.clear),
         onPressed: () {
@@ -212,6 +223,7 @@ class ProjectSearchDelegate extends SearchDelegate {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
+        // Close the search view
       icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
@@ -221,11 +233,12 @@ class ProjectSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    // Filter projects based on the search query
     final results = projectData
         .where((project) =>
             project['project_name'].toString().toLowerCase().contains(query.toLowerCase()))
         .toList();
-
+     // Show filtered results or a message if no results match
     return results.isEmpty
         ? const Center(
             child: Text("No projects found matching your search."),
@@ -241,7 +254,7 @@ class ProjectSearchDelegate extends SearchDelegate {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => Projectpage(
-                        projectId: project['id'],
+                        projectId: project['id'], // Navigate with project ID
                       ),
                     ),
                   );

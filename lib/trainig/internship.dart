@@ -77,23 +77,26 @@ class _InternshipState extends State<Internship> {
       appBar: AppBar(
         title:  AutoSizeText(
           'Internship',
-          presetFontSizes: [screenWiidth >= 700? 30 : 25],
+          presetFontSizes: [screenWiidth >= 700? 40 : 25], // Adjust text size dynamically.
         ),
         actions: [
+          // Search icon in the AppBar.
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
+              // Show search functionality when pressed.
               showSearch(
                 context: context,
                 delegate: InternshipSearchDelegate(),
               );
             },
           ),
+           // Filter button in the AppBar.
           PopupMenuButton<String>(
             onSelected: (value) {
               setState(() {
-                selectedCity = value;
-                filterByCity(selectedCity);
+                selectedCity = value; // Update selected city.
+                filterByCity(selectedCity); // Apply filter.
               });
             },
             itemBuilder: (context) => [
@@ -103,7 +106,7 @@ class _InternshipState extends State<Internship> {
               const PopupMenuItem(value: "Dammam", child: Text("Dammam")),
               const PopupMenuItem(value: "Madinah", child: Text("Madinah")),
             ],
-            icon: const Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list), // Icon for filtering.
           ),
         ],
       ),
@@ -112,17 +115,19 @@ class _InternshipState extends State<Internship> {
           : filteredInternshipData.isEmpty
               ? const Center(
                   child: Text(
-                    "No internships found.",
+                    "No internships found.", // Display message if no data is found.
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ) // Show message when no data is found
-              : ListView.separated(
-                  itemCount: filteredInternshipData.length,
+              : ListView.separated( // Display internship data in a list.
+                  itemCount: filteredInternshipData.length, // Number of items.
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
+                            // Navigate to detailed info page on tap.
+
                             builder: (context) => Companyinfo(
                               companyName: filteredInternshipData[index]['company_name'] ?? 'N/A',
                               city: filteredInternshipData[index]['city'] ?? 'N/A',
@@ -153,15 +158,18 @@ class _InternshipState extends State<Internship> {
                           children: [
                             ListTile(
                               title: AutoSizeText(
-                                filteredInternshipData[index]['company_name'],
+                                filteredInternshipData[index]['company_name'], //display company name
                                 presetFontSizes: [screenWiidth >= 700? 50 : 25],
+                                style: TextStyle(fontWeight: FontWeight.bold),
                                 maxLines: 1,
                               ),
-                              subtitle: AutoSizeText(filteredInternshipData[index]['city'],
+                              subtitle: AutoSizeText(filteredInternshipData[index]['city'], // display city
                                presetFontSizes: [screenWiidth >= 700? 30 : 15],
+                               style: TextStyle(color:  Color(0xFF2196F3),)
+                               
                               ),
-                              trailing: const Icon(Icons.arrow_forward_ios),
-                              leading: Container(
+                              trailing: const Icon(Icons.arrow_forward_ios), // Icon indicating navigation.
+                              leading: Container( // decoration for the rectangule
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadiusDirectional.circular(10),
                                   border: Border.all(color: const Color.fromARGB(255, 250, 247, 247)),
@@ -174,7 +182,7 @@ class _InternshipState extends State<Internship> {
                                     )
                                   ],
                                 ),
-                                child: Image.network(filteredInternshipData[index]['image_url']),
+                                child: Image.network(filteredInternshipData[index]['image_url']), // logo for the company
                               ),
                             ),
                           ],
@@ -183,7 +191,7 @@ class _InternshipState extends State<Internship> {
                     );
                   },
                   separatorBuilder: (context, i) {
-                    return const Divider(color: Colors.white, height: 4);
+                    return const Divider(color: Colors.white, height: 4); // put dividor after each listTile
                   },
                 ),
     );
@@ -192,6 +200,7 @@ class _InternshipState extends State<Internship> {
 
 // SearchDelegate for Internship search
 class InternshipSearchDelegate extends SearchDelegate {
+   // Function to search internships in Firestore based on the query.
   Future<List<Map<String, dynamic>>> searchInternships(String query) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -226,7 +235,7 @@ class InternshipSearchDelegate extends SearchDelegate {
       IconButton(
         icon: const Icon(Icons.clear),
         onPressed: () {
-          query = '';
+          query = ''; // Clear the query text.
           showSuggestions(context); // Trigger update when cleared
         },
       ),
@@ -238,7 +247,7 @@ class InternshipSearchDelegate extends SearchDelegate {
     return IconButton(
       icon: const Icon(Icons.arrow_back),
       onPressed: () {
-        close(context, null);
+        close(context, null); // Close the search delegate.
       },
     );
   }
@@ -249,7 +258,7 @@ class InternshipSearchDelegate extends SearchDelegate {
   }
 
   @override
-  Widget buildSuggestions(BuildContext context) {
+  Widget buildSuggestions(BuildContext context) { // to display suggestion when search
     return FutureBuilder(
       future: searchInternships(query),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
@@ -264,7 +273,7 @@ class InternshipSearchDelegate extends SearchDelegate {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           );
-        }
+        } 
 
         var results = snapshot.data!;
 

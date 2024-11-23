@@ -24,13 +24,10 @@ class _SettingsState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 194, 214, 231),
         title: const Text(
           'Settings',
-          style: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
       body: ListView.builder(

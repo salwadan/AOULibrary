@@ -37,8 +37,7 @@ class _FacultyState extends State<Faculty> {
         appBar: AppBar(
           backgroundColor: const Color.fromRGBO(194, 214, 231, 1),
           title: Text(
-            'University majors ',
-            style: const TextStyle(color: Colors.white, fontSize: 20),
+            'University Faculty ',
           ),
         ),
         body: ListView.builder(

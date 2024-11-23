@@ -94,7 +94,7 @@ class _ProjectpageState extends State<Projectpage> {
                                 "By: ${project['student_name'] ?? 'N/A'}", // Student name
                                 style: const TextStyle(
                                   fontSize: 16,
-                                  color: Colors.blue,
+                                  color: Color(0xFF2196F3),
                                 ),
                               ),
                               const SizedBox(height: 8),
