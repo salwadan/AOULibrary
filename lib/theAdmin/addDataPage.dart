@@ -1,9 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:salwa_app/theAdmin/additionField.dart';
+import 'dart:io';
 import 'package:salwa_app/theAdmin/adminPage.dart';
+import 'package:salwa_app/theAdmin/uploading.dart';
 
 class AddDataPage extends StatefulWidget {
-  //The key ensures that widgets can be identified and updated correctly.
   const AddDataPage({Key? key}) : super(key: key);
 
   @override
@@ -11,22 +16,21 @@ class AddDataPage extends StatefulWidget {
 }
 
 class _AddDataPageState extends State<AddDataPage> {
-  // Separate FormKeys for each section
-  //validating and managing form submissions independently.
-  final _courseFormKey = GlobalKey<FormState>();
-  final _projectFormKey = GlobalKey<FormState>();
-  final _internshipFormKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  List<String> oldExamFilePaths = []; // List to store multiple file paths
+  List<String> summaryFilePaths = []; // List to store multiple summary file paths
+  final Uploading uploader = Uploading(); // Instance of the Uploading class to handle file uploads.
+  final AdditionField additionField = AdditionField(); // Initialize the helper class
 
-  //Stores the dropdown value for the faculty.
+  // ***Controllers for Courses Section***
   String selectedFaculty = 'Faculty_Of_Computer';
-  // Controllers for Courses Section
   final TextEditingController courseNameController = TextEditingController();
   final TextEditingController lectureController = TextEditingController();
   final TextEditingController oldExamController = TextEditingController();
   final TextEditingController summaryController = TextEditingController();
   final TextEditingController overviewController = TextEditingController();
 
-  // Controllers for Graduation Projects Section
+  // ***Controllers for Graduation Projects Section***
   final TextEditingController projectNameController = TextEditingController();
   final TextEditingController projectDescriptionController = TextEditingController();
   final TextEditingController projectImageUrlController = TextEditingController();
@@ -34,7 +38,7 @@ class _AddDataPageState extends State<AddDataPage> {
   final TextEditingController projectStudentNameController = TextEditingController();
   final TextEditingController projectTypeController = TextEditingController();
 
-  // Controllers for Internships Section
+  // ***Controllers for Internships Section***
   final TextEditingController internshipCompanyNameController = TextEditingController();
   final TextEditingController internshipEmailController = TextEditingController();
   final TextEditingController internshipCityController = TextEditingController();
@@ -43,122 +47,198 @@ class _AddDataPageState extends State<AddDataPage> {
   final TextEditingController internshipImageUrlController = TextEditingController();
   final TextEditingController internshipLocationController = TextEditingController();
 
-  //Stores success or error messages to display after submission.
+  // Variables to temporarily hold file paths
+  String? oldExamFilePath;
+  String? summaryFilePath;
+  // Variables to store the file path for the images
+  String? imageFileP;//for project
+  String? imageFileI;//for internship
+  // String to store status messages or error messages
   String? _message;
-
-  Future<void> addSingleFieldToFirestore({
-    required String field,
-    required TextEditingController controller,
-    required String collection,
-    required String docId,
-  }) async {
-    if (controller.text.isNotEmpty) { //Ensures the input field is not empty
-      final ref = FirebaseFirestore.instance
-          .collection('courses')
-          .doc(selectedFaculty)
-          .collection(collection)
-          .doc(docId);
-
-      await ref.set({
-        //Adds the input value to the array in Firestore 
-        field: FieldValue.arrayUnion([controller.text]),
-      }, SetOptions(merge: true)); // Ensures existing data in the document isn't overwritten
-
-      setState(() {
-        _message = "$field added successfully!";
-      });
-
-      controller.clear();
-    } else {
-      setState(() {
-        _message = "Field cannot be empty!";
-      });
-    }
-  }
-
 
   // Add Course Data
   Future<void> addCourse() async {
-    if (_courseFormKey.currentState!.validate()) { // Ensures all required fields are filled
-      final ref = FirebaseFirestore.instance
-          .collection('courses')
-          .doc(selectedFaculty)
-          .collection('course_name')
-          .doc(courseNameController.text);
+    // Validate the form inputs
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Firestore Reference
+        final courseRef = FirebaseFirestore.instance
+            .collection('courses')
+            .doc(selectedFaculty)
+            .collection('course_name')
+            .doc(courseNameController.text);
 
-      await ref.set({
-        'overview': overviewController.text,
-      }, SetOptions(merge: true));
+        // *** Upload and append Old Exam PDFs ***
+        List<String> oldExamUrls = [];
+        for (String filePath in oldExamFilePaths) {
+          String fileName =
+              '${courseNameController.text}_old_exam_${oldExamFilePaths.indexOf(filePath) + 1}.pdf';
+          // Upload the file to Firebase Storage and retrieve the URL
+          String uploadedUrl =
+              await uploader.uploadFileToStorage(filePath, fileName);
+          oldExamUrls.add(uploadedUrl);
+        }
+        // Save Old Exam URLs to Firestore if the list is not empty
+        if (oldExamUrls.isNotEmpty) {
+          await courseRef.set({
+            'old_exam': FieldValue.arrayUnion(oldExamUrls),
+          }, SetOptions(merge: true));
+        }
 
-      setState(() {
-        _message = "Course added successfully!";
-      });
+        // *** Upload and append Summary PDFs ***
+        List<String> summaryUrls = [];
+        for (String filePath in summaryFilePaths) {
+          String fileName =
+              '${courseNameController.text}_summary_${summaryFilePaths.indexOf(filePath) + 1}.pdf';
+          String uploadedUrl =
+              await uploader.uploadFileToStorage(filePath, fileName);
+          summaryUrls.add(uploadedUrl);
+        }
+        // Save Summary URLs to Firestore if the list is not empty
+        if (summaryUrls.isNotEmpty) {
+          await courseRef.set({
+            'summary': FieldValue.arrayUnion(summaryUrls),
+          }, SetOptions(merge: true));
+        }
 
-      clearCourseFields();
+        // ***Append lecture to Firestore array***
+        if (lectureController.text.isNotEmpty) {
+          // Add the lecture content to the Firestore 'lecture' array field
+          await courseRef.set({
+            'lecture': FieldValue.arrayUnion([lectureController.text]),
+          }, SetOptions(merge: true));
+        }
+
+        // Add overview if not empty
+        if (overviewController.text.isNotEmpty) {
+          // Add the overview text to the Firestore document
+          await courseRef.set({
+            'overview': overviewController.text,
+          }, SetOptions(merge: true));
+        }
+
+        // Success message
+        setState(() {
+          _message = "Course added successfully!";
+        });
+
+        // Clear input fields
+        clearFields();
+      } catch (e) {
+        // Handle errors
+        setState(() {
+          _message = "Error adding course: $e";
+        });
+      }
     }
   }
 
   // Add Graduation Project Data
   Future<void> addGraduationProject() async {
-    if (_projectFormKey.currentState!.validate()) { //validate the form
-      final projectRef = FirebaseFirestore.instance
-          .collection('graduation_projects') //accessing graduation_projects collection
-          .doc(projectNameController.text);
-      await projectRef.set({
-        'description': projectDescriptionController.text,
-        'image_url': projectImageUrlController.text,
-        'programming_language': projectProgrammingLangController.text,
-        'student_name': projectStudentNameController.text,
-        'project_type': projectTypeController.text,
-      });
-      setState(() {
-        _message = "Graduation project added successfully!";
-      });
-      clearProjectFields();
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Variable to store the URL of the uploaded image
+        String? imageUrl;
+
+        // Upload the image if it has been selected
+        if (imageFileP != null) {
+          // Upload the selected image to Firebase Storage and retrieve the URL
+          imageUrl = await uploader.uploadImageToStorage(
+            imageFileP!,
+            '${projectNameController.text}_project_image.png',
+          );
+          projectImageUrlController.text =
+              imageUrl; // Save the image URL in the controller
+        }
+
+        // Reference to the Firestore collection
+        final projectRef = FirebaseFirestore.instance
+            .collection('graduation_projects')
+            .doc(projectNameController.text);
+
+        // Save data to Firestore
+        await projectRef.set({
+          'description': projectDescriptionController.text,
+          'image_url': projectImageUrlController.text, 
+          'programming_language': projectProgrammingLangController.text,
+          'student_name': projectStudentNameController.text,
+          'project_type': projectTypeController.text,
+          'project_name': projectNameController,
+        });
+
+        setState(() {
+          _message = "Graduation project added successfully!";
+        });
+
+        clearFields(); // Clear the input fields
+      } catch (e) {
+        setState(() {
+          _message = "Error adding graduation project: $e";
+        });
+      }
     }
   }
 
   // Add Internship Data
   Future<void> addInternship() async {
-    if (_internshipFormKey.currentState!.validate()) {
-      final internshipRef = FirebaseFirestore.instance
-          .collection('internships')
-          .doc(internshipCompanyNameController.text);
-      await internshipRef.set({
-        'Email': internshipEmailController.text,
-        'city': internshipCityController.text,
-        'company_name': internshipCompanyNameController.text,
-        'contact_number': internshipContactController.text,
-        'description': internshipDescriptionController.text,
-        'image_url': internshipImageUrlController.text,
-        'location': internshipLocationController.text,
-      });
-      setState(() {
-        _message = "Internship added successfully!";
-      });
-      clearInternshipFields();
+    if (_formKey.currentState!.validate()) {
+      try {
+        String? imageUrl;
+
+        // Upload the image if it has been selected
+        if (imageFileI != null) {
+          imageUrl = await uploader.uploadImageToStorage(
+            imageFileI!,
+            '${internshipCompanyNameController.text}_internship_image.png',
+          );
+          internshipImageUrlController.text =
+              imageUrl; // Save the image URL in the controller
+        }
+
+        // Reference to the Firestore collection
+        final internshipRef = FirebaseFirestore.instance
+            .collection('internships')
+            .doc(internshipCompanyNameController.text);
+
+        // Save data to Firestore
+        await internshipRef.set({
+          'Email': internshipEmailController.text,
+          'city': internshipCityController.text,
+          'company_name': internshipCompanyNameController.text,
+          'contact_number': internshipContactController.text,
+          'description': internshipDescriptionController.text,
+          'image_url': internshipImageUrlController.text, 
+          'location': internshipLocationController.text,
+        });
+
+        setState(() {
+          _message = "Internship added successfully!";
+        });
+
+        clearFields(); // Clear the input fields
+      } catch (e) {
+        setState(() {
+          _message = "Error adding internship: $e";
+        });
+      }
     }
   }
 
-  // Clear fields for each section
-  void clearCourseFields() {
+  // Clear input fields
+  void clearFields() {
     courseNameController.clear();
     lectureController.clear();
     oldExamController.clear();
     summaryController.clear();
     overviewController.clear();
-  }
-
-  void clearProjectFields() {
+    oldExamFilePath = null;
+    summaryFilePath = null;
     projectNameController.clear();
     projectDescriptionController.clear();
     projectImageUrlController.clear();
     projectProgrammingLangController.clear();
     projectStudentNameController.clear();
     projectTypeController.clear();
-  }
-
-  void clearInternshipFields() {
     internshipCompanyNameController.clear();
     internshipEmailController.clear();
     internshipCityController.clear();
@@ -184,7 +264,6 @@ class _AddDataPageState extends State<AddDataPage> {
           tooltip: "Back to Admin Page",
         ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: ListView(
@@ -194,10 +273,9 @@ class _AddDataPageState extends State<AddDataPage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Form(
-              key: _courseFormKey,
+              key: _formKey,
               child: Column(
                 children: [
-                  // drop list for choosing faculty
                   DropdownButtonFormField<String>(
                     value: selectedFaculty,
                     items: const [
@@ -225,205 +303,255 @@ class _AddDataPageState extends State<AddDataPage> {
                   TextFormField(
                     controller: courseNameController,
                     decoration: const InputDecoration(labelText: "Course Name"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Course Name is required' : null,
                   ),
                   TextFormField(
                     controller: overviewController,
                     decoration: const InputDecoration(labelText: "Overview"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'overview is required' : null,
                   ),
                   Row(
                     children: [
                       Expanded(
                         child: TextFormField(
                           controller: lectureController,
-                          decoration: const InputDecoration(labelText: "Lecture"),
+                          decoration: const InputDecoration(
+                              labelText: "Recorded lecture"),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed: () {
-                          addSingleFieldToFirestore(
-                            field: 'lecture', // Field name in Firestore
-                            controller: lectureController, // Controller for user input
-                            collection: 'course_name', // Firestore collection name
-                            docId: courseNameController.text, // Document ID (Course Name)
-                          );
+                        icon: const Icon(Icons.add, color: Colors.green),// Add icon with green color
+                        onPressed: () async {
+                          try {
+                            // Use AdditionField to add the lecture
+                            await additionField.addSingleField(
+                              field: 'lecture', // Firestore field name where the data will be stored
+                              value: lectureController.text, // The lecture input value to add
+                              collection: 'course_name', // Subcollection where the course data is stored
+                              docId: courseNameController.text, // Document ID for the specific course
+                              selectedFaculty: selectedFaculty, // Include the faculty context
+                            );
+                            setState(() {
+                              _message = "Lecture added successfully!";
+                            });
+                            lectureController
+                                .clear(); // Clear the input after adding
+                          } catch (e) {
+                            setState(() {
+                              _message = e.toString(); // Display error if any
+                            });
+                          }
                         },
                       ),
                     ],
                   ),
-                  Row(
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: oldExamController,
-                          decoration: const InputDecoration(labelText: "Old Exam"),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed: () {
-                          addSingleFieldToFirestore(
-                            field: 'old_exam',
-                            controller: oldExamController,
-                            collection: 'course_name',
-                            docId: courseNameController.text,
-                          );
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Open file picker to select a PDF file
+                          final filePath = await uploader.pickPdfFile(); // Pick a new file
+                          if (filePath != null) {
+                            setState(() {
+                              oldExamFilePaths.add(filePath); // Add the file to the list
+                            });
+                            print('------ File picked with path= $filePath');
+                          }
                         },
+                        child: const Text("Select Old Exam PDF"),
                       ),
+                      const SizedBox(height: 10),
+                      if (oldExamFilePaths.isNotEmpty) ...[
+                        // Display a heading if there are selected files
+                        const Text("Selected Files:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: oldExamFilePaths.length,
+                          itemBuilder: (context, index) {
+                            final fileName =
+                                oldExamFilePaths[index].split('/').last;
+                            return ListTile(
+                              title: Text(fileName),
+                              trailing: IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    oldExamFilePaths.removeAt(
+                                        index); // Remove the file from the list
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ],
                   ),
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: summaryController,
-                          decoration: const InputDecoration(labelText: "Summary"),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed: () {
-                          addSingleFieldToFirestore(
-                            field: 'summary',
-                            controller: summaryController,
-                            collection: 'course_name',
-                            docId: courseNameController.text,
-                          );
+                      ElevatedButton(
+                        onPressed: () async {
+                          final filePath =
+                              await uploader.pickPdfFile(); // Pick a new file
+                          if (filePath != null) {
+                            setState(() {
+                              summaryFilePaths
+                                  .add(filePath); // Add the file to the list
+                            });
+                            print('------ File picked with path= $filePath');
+                          }
                         },
+                        child: const Text("Select Summary PDF"),
                       ),
+                      const SizedBox(height: 10),
+                      if (summaryFilePaths.isNotEmpty) ...[
+                        const Text("Selected Summary Files:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: summaryFilePaths.length,
+                          itemBuilder: (context, index) {
+                            final fileName =
+                                summaryFilePaths[index].split('/').last;
+                            return ListTile(
+                              title: Text(fileName),
+                              trailing: IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    summaryFilePaths.removeAt(
+                                        index); // Remove the file from the list
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ],
                   ),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue, // Set the background color
+                      foregroundColor: Colors.white, // Set the text color
+                    ),
                     onPressed: addCourse,
                     child: const Text("Add Course"),
                   ),
-                  if (_message != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Text(
-                        _message!,
-                        style: const TextStyle(color: Colors.green, fontSize: 16),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const Divider(),
-            const Text(
-              "Add Graduation Project",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Form(
-              key: _projectFormKey,
-              child: Column(
-                children: [
+
+                  const Divider(),
+                  const Text(
+                    "Add Graduation Project",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
                   TextFormField(
                     controller: projectNameController,
-                    decoration: const InputDecoration(labelText: "Project Name"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Project Name is required' : null,
+                    decoration:
+                        const InputDecoration(labelText: "Project Name"),
                   ),
                   TextFormField(
                     controller: projectDescriptionController,
                     decoration: const InputDecoration(labelText: "Description"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Description is required' : null,
                   ),
-                  TextFormField(
-                    controller: projectImageUrlController,
-                    decoration: const InputDecoration(labelText: "Image URL"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Image url is required' : null,
-                  ),
+
                   TextFormField(
                     controller: projectProgrammingLangController,
                     decoration: const InputDecoration(
                         labelText: "Programming Language"),
-                        validator: (value) =>
-                        value!.isEmpty ? 'programming language is required' : null,
                   ),
                   TextFormField(
                     controller: projectStudentNameController,
                     decoration:
                         const InputDecoration(labelText: "Student Name"),
-                        validator: (value) =>
-                        value!.isEmpty ? 'Student name is required' : null,
                   ),
                   TextFormField(
                     controller: projectTypeController,
                     decoration:
                         const InputDecoration(labelText: "Project Type"),
-                        validator: (value) =>
-                        value!.isEmpty ? 'Project type is required' : null,
                   ),
                   ElevatedButton(
+                    onPressed: () async {
+                      imageFileP = await uploader
+                          .pickImageFile(); // Using the `pickImageFile` method from the `uploading` class
+                      setState(
+                          () {}); // Refresh the UI to display the selected image
+                    },
+                    child: const Text("Select Image"), // Button text
+                  ),
+                  if (imageFileP != null)
+                    Text(
+                        "Selected: ${imageFileP!.split('/').last}"), // Display the name of the selected image file
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue, // Set the background color
+                      foregroundColor: Colors.white, // Set the text color
+                    ),
                     onPressed: addGraduationProject,
                     child: const Text("Add Graduation Project"),
                   ),
-                ],
-              ),
-            ),
-            const Divider(),
-            const Text(
-              "Add Internship",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Form(
-              key: _internshipFormKey,
-              child: Column(
-                children: [
+                  const Divider(),
+                  const Text(
+                    "Add Internship",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
                   TextFormField(
                     controller: internshipCompanyNameController,
                     decoration:
                         const InputDecoration(labelText: "Company Name"),
-                        validator: (value) =>
-                        value!.isEmpty ? 'Company name is required' : null,
                   ),
                   TextFormField(
                     controller: internshipEmailController,
                     decoration: const InputDecoration(labelText: "Email"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Email is required' : null,
                   ),
                   TextFormField(
                     controller: internshipCityController,
                     decoration: const InputDecoration(labelText: "City"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'City is required' : null,
                   ),
                   TextFormField(
                     controller: internshipContactController,
                     decoration:
                         const InputDecoration(labelText: "Contact Number"),
-                        validator: (value) =>
-                        value!.isEmpty ? 'Contact number is required' : null,
                   ),
                   TextFormField(
                     controller: internshipDescriptionController,
                     decoration: const InputDecoration(labelText: "Description"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Description is required' : null,
                   ),
-                  TextFormField(
-                    controller: internshipImageUrlController,
-                    decoration: const InputDecoration(labelText: "Image URL"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Image url is required' : null,
-                  ),
+
                   TextFormField(
                     controller: internshipLocationController,
                     decoration: const InputDecoration(labelText: "Location"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Location is required' : null,
                   ),
                   ElevatedButton(
+                    onPressed: () async {
+                      imageFileI = await uploader
+                          .pickImageFile(); // Using the `pickImageFile` method from the `uploading` class
+                      setState(
+                          () {}); // Refresh the UI to display the selected image
+                    },
+                    child: const Text("Select Image"), // Button text
+                  ),
+                  if (imageFileI != null)
+                    Text(
+                        "Selected: ${imageFileI!.split('/').last}"), // Display the name of the selected image file
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue, // Set the background color
+                      foregroundColor: Colors.white, // Set the text color
+                    ),
                     onPressed: addInternship,
                     child: const Text("Add Internship"),
                   ),
+                  if (_message != null) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      _message!,
+                      style: const TextStyle(color: Colors.green, fontSize: 16),
+                    ),
+                  ],
                 ],
               ),
             ),

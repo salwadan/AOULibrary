@@ -6,36 +6,35 @@ import 'package:salwa_app/theAdmin/deletePage.dart';
 import 'package:salwa_app/theAdmin/modifyPage.dart';
 import 'package:salwa_app/homepage.dart';
 
+// Represents the main admin page with various navigation options for admin actions.
 class AdminPage extends StatelessWidget {
   const AdminPage({Key? key}) : super(key: key);
-
-  Future<void> logout(BuildContext context) async {
-    // Simulate logout logic
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const Login()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // app bar section
       appBar: AppBar(
         title: const Text("Admin Page"),
+        
         backgroundColor: const Color.fromARGB(255, 155, 182, 229),
+
         actions: [
           IconButton(
-  icon: const Icon(Icons.logout),
-  onPressed: () async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const Login()),
-    );
-  },
-  tooltip: "Logout",
-),
-
+            // Logout button in the AppBar
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const Login()),
+              );
+            },
+            tooltip: "Logout",
+          ),
         ],
       ),
+
+      // Main body of the admin page
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -46,10 +45,12 @@ class AdminPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
+
+            // add data page button
             const SizedBox(height: 30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: const Color.fromARGB(255, 155, 182, 229),
                 minimumSize: const Size(double.infinity, 50),
               ),
               onPressed: () {
@@ -59,10 +60,12 @@ class AdminPage extends StatelessWidget {
               },
               child: const Text("Add Data"),
             ),
+
+            // modify data page button
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: const Color.fromARGB(255, 155, 182, 229),
                 minimumSize: const Size(double.infinity, 50),
               ),
               onPressed: () {
@@ -72,10 +75,12 @@ class AdminPage extends StatelessWidget {
               },
               child: const Text("Modify Data"),
             ),
+
+            // delete data page button
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: const Color.fromARGB(255, 155, 182, 229),
                 minimumSize: const Size(double.infinity, 50),
               ),
               onPressed: () {
@@ -85,10 +90,12 @@ class AdminPage extends StatelessWidget {
               },
               child: const Text("Delete Data"),
             ),
+
+            // home page button
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: const Color.fromARGB(255, 155, 182, 229),
                 minimumSize: const Size(double.infinity, 50),
               ),
               onPressed: () {

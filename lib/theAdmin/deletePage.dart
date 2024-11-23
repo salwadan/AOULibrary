@@ -18,6 +18,7 @@ class DeletePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar with a title and a back button
       appBar: AppBar(
         title: const Text("Delete Data"),
         backgroundColor: const Color.fromARGB(255, 155, 182, 229),
@@ -31,13 +32,15 @@ class DeletePage extends StatelessWidget {
           tooltip: "Back to Admin Page",
         ),
       ),
+
+      // Body contains a list of sections to delete data
       body: ListView(
         children: [
           _buildSection(
             title: "Courses",
             collectionName: 'courses',
             subCollectionName: 'course_name',
-            fields: ['lecture', 'old_exam', 'summary'],
+            fields: ['lecture', 'old_exam', 'summary', 'overview'],
           ),
           _buildSection(
             title: "Graduation Projects",
@@ -53,16 +56,17 @@ class DeletePage extends StatelessWidget {
       ),
     );
   }
-
+// Builds a section for each data category (Courses, Graduation Projects, Internships)
   Widget _buildSection({
     required String title,
     required String collectionName,
     String? subCollectionName,
     required List<String> fields,
   }) {
-    return ExpansionTile(
+    return ExpansionTile(// when clicking the title, the children appear
       title: Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
       children: [
+        // Fetches real-time updates from Firestore
         StreamBuilder<QuerySnapshot>(
           stream: subCollectionName == null
               ? FirebaseFirestore.instance.collection(collectionName).snapshots()

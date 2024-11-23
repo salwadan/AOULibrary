@@ -21,9 +21,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       builder: DevicePreview.appBuilder,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
+          centerTitle: true,
           
             backgroundColor:  const Color.fromARGB(255, 194, 214, 231),
             titleTextStyle: TextStyle(

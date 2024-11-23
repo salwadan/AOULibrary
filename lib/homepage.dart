@@ -109,6 +109,7 @@ class _HomepageState extends State<Homepage> {
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
                     Navigator.of(context)
+                         // delete all pages and logout
                         .pushNamedAndRemoveUntil("login", (route) => false);
                   },
                   icon: const Icon(Icons.exit_to_app))
