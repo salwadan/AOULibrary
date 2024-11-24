@@ -113,7 +113,7 @@ class _BusinessdetailsState extends State<Businessdetails> {
                             ),
                             // Lecture Classification with URL launcher
                             ClassificationItem(
-                              title: "Lecture",
+                              title: "Recorded Lectures",
                               items: fetchedLectures.isEmpty
                                   ? ['No Lectures Available']
                                   : fetchedLectures,
