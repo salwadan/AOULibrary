@@ -13,6 +13,7 @@ class Comments extends StatefulWidget {
 class _CommentsState extends State<Comments> {
   final TextEditingController _commentController = TextEditingController(); // Controller for the comment input field
   String username = 'Anonymous'; // Default username if not fetched
+  String? userId; // To store the user ID of the logged-in user
 
 
   @override
@@ -37,11 +38,11 @@ class _CommentsState extends State<Comments> {
         // Set the username from the fetched document data , If data exists, update the username
         setState(() {
           username = userDocs.docs.first['name'] ?? 'Anonymous';
+          userId = user.uid; // Store the user ID from FirebaseAuth
         });
-        print("Fetched username: $username"); // Debugging statement print fetched username
-
+        print("Fetched username: $username and user ID: $userId"); // Debugging statement
       } else {
-        print("No user data found for this email.");  // Debugging: no user data
+        print("No user data found for this email."); // Debugging: no user data
       }
     } else {
       print("User is not logged in."); // Debugging: user not logged in
@@ -77,11 +78,12 @@ class _CommentsState extends State<Comments> {
     if (commentText.isNotEmpty) {
       try {
         // Add a new comment document to the 'comments' collection in Firestore
-        await FirebaseFirestore.instance.collection('comments').add({
+        await FirebaseFirestore.instance.collection('feedback').add({
           'course_id': widget.courseId, // Associate the comment with the course
           'text': commentText, // Comment text
           'time': FieldValue.serverTimestamp(), // Timestamp of the comment
           'username': username, // Username of the commenter
+          'user_id': userId, // User ID of the commenter
         });
         _commentController.clear(); // Clear the input field after submission
 
@@ -161,7 +163,7 @@ class _CommentsState extends State<Comments> {
               width: MediaQuery.of(context).size.width, // Full width of the screen
               child: StreamBuilder(
                 stream: FirebaseFirestore.instance
-                    .collection('comments') // Fetch comments collection
+                    .collection('feedback') // Fetch comments collection
                     .where('course_id', isEqualTo: widget.courseId) // Filter by course ID
                     .orderBy('time',   // Order comments by time
                         descending: false) // Order by time (newest first)

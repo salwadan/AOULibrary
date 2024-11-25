@@ -163,7 +163,7 @@ class _AddDataPageState extends State<AddDataPage> {
           'programming_language': projectProgrammingLangController.text,
           'student_name': projectStudentNameController.text,
           'project_type': projectTypeController.text,
-          'project_name': projectNameController,
+          'project_name': projectNameController.text,
         });
 
         setState(() {

@@ -5,11 +5,6 @@ import 'package:salwa_app/theAdmin/adminPage.dart';
 class ModifyPage extends StatelessWidget {
   const ModifyPage({Key? key}) : super(key: key);
 
-  Future<void> updateDocument(
-      DocumentReference reference, Map<String, dynamic> updatedData) async {
-    await reference.update(updatedData);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,13 +34,27 @@ class ModifyPage extends StatelessWidget {
             title: "Graduation Projects",
             collectionName: 'graduation_projects',
             arrayFields: [],
-            otherFields: ['description', 'image_url', 'programming_language', 'student_name', 'project_type'],
+            otherFields: [
+              'description',
+              'image_url',
+              'programming_language',
+              'student_name',
+              'project_type'
+            ],
           ),
           _buildSection(
             title: "Internships",
             collectionName: 'internships',
             arrayFields: [],
-            otherFields: ['Email', 'city', 'contact_number', 'description', 'image_url', 'location', 'company_name'],
+            otherFields: [
+              'Email',
+              'city',
+              'contact_number',
+              'description',
+              'image_url',
+              'location',
+              'company_name'
+            ],
           ),
         ],
       ),
@@ -60,12 +69,17 @@ class ModifyPage extends StatelessWidget {
     required List<String> otherFields,
   }) {
     return ExpansionTile(
-      title: Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+      title: Text(title,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
       children: [
         StreamBuilder<QuerySnapshot>(
           stream: subCollectionName == null
-              ? FirebaseFirestore.instance.collection(collectionName).snapshots()
-              : FirebaseFirestore.instance.collectionGroup(subCollectionName).snapshots(),
+              ? FirebaseFirestore.instance
+                  .collection(collectionName)
+                  .snapshots()
+              : FirebaseFirestore.instance
+                  .collectionGroup(subCollectionName)
+                  .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -104,9 +118,10 @@ class ModifyPage extends StatelessWidget {
     final reference = document.reference;
 
     // Controllers for non-array fields
-    final Map<String, TextEditingController> controllers = {
-      for (var field in otherFields)
-        field: TextEditingController(text: document[field]?.toString() ?? ''),
+    final Map<String, dynamic> modifiedData = {
+      for (var field in otherFields) field: document[field]?.toString() ?? '',
+      for (var field in arrayFields)
+        field: List<String>.from(document[field] ?? []),
     };
 
     return Card(
@@ -119,14 +134,17 @@ class ModifyPage extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  controller: controllers[field],
+                  initialValue: modifiedData[field],
                   decoration: InputDecoration(labelText: field),
+                  onChanged: (value) {
+                    modifiedData[field] = value;
+                  },
                 ),
               );
             },
           ).toList(),
           ...arrayFields.map((field) {
-            final List<dynamic> fieldValues = document[field] ?? [];
+            final List<dynamic> fieldValues = modifiedData[field] ?? [];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -142,9 +160,11 @@ class ModifyPage extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: fieldValues.length,
                   itemBuilder: (context, index) {
-                    final controller = TextEditingController(text: fieldValues[index]?.toString());
+                    final controller = TextEditingController(
+                        text: fieldValues[index]?.toString());
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4.0, horizontal: 8.0),
                       child: TextFormField(
                         controller: controller,
                         decoration: InputDecoration(
@@ -164,13 +184,10 @@ class ModifyPage extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
             ),
-            onPressed: () {
+            onPressed: () async {
               // Gather updated data from controllers
-              final updatedData = {
-                for (var field in otherFields) field: controllers[field]!.text,
-              };
+              await reference.update(modifiedData);
 
-              updateDocument(reference, updatedData);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Changes saved successfully")),
               );

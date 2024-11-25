@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:salwa_app/Setting/account.dart';
 
+import '../auth/login.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -17,7 +19,8 @@ class _SettingsState extends State<SettingsPage> {
   // LogOut function
   void logOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushNamedAndRemoveUntil("login", (route) => false);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => Login()));
   }
 
   @override

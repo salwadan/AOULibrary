@@ -1,4 +1,4 @@
-import 'dart:async'; // For using Timer
+/*import 'dart:async'; // For using Timer
 
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication package
 import 'package:flutter/cupertino.dart'; // For Cupertino widgets (iOS-style widgets)
@@ -93,3 +93,4 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 }
+*/

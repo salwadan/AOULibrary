@@ -68,7 +68,7 @@ class _LoginState extends State<Login> {
       body: Container(
         // Padding around the content
         padding: const EdgeInsets.all(20),
-        
+
         // Using ListView to ensure the content is scrollable
         child: ListView(
           children: [
@@ -87,11 +87,12 @@ class _LoginState extends State<Login> {
                     "Log in",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
-                  Container(height: 20), // Spacing
+                  Container(height: 20),
 
                   // Email label and input field
                   const Text("Email",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Container(height: 10),
                   CustomTextForm(
                     hinttext: "Enter your Email", // Placeholder text
@@ -110,7 +111,8 @@ class _LoginState extends State<Login> {
 
                   // Password label and input field
                   const Text("Password",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Container(height: 10),
                   CustomTextForm(
                     hinttext: "Enter your Password", // Placeholder text
@@ -130,7 +132,8 @@ class _LoginState extends State<Login> {
                     onTap: () async {
                       if (email.text.isEmpty) {
                         setState(() {
-                          _message = 'Please enter your email first'; // Error message
+                          _message =
+                              'Please enter your email first'; // Error message
                           _isSuccessMessage = false;
                         });
                         return;
@@ -141,7 +144,8 @@ class _LoginState extends State<Login> {
                         await FirebaseAuth.instance
                             .sendPasswordResetEmail(email: email.text);
                         setState(() {
-                          _message = 'A link to reset your password has been sent to you';
+                          _message =
+                              'A link to reset your password has been sent to you';
                           _isSuccessMessage = true;
                         });
                       } catch (e) {
@@ -199,12 +203,23 @@ class _LoginState extends State<Login> {
                           builder: (context) => const AdminPage(),
                         ),
                       );
-                    } else if (credential.user!.emailVerified) {
+                    } else if (FirebaseAuth
+                        .instance.currentUser!.emailVerified) {
+                      // ignore: prefer_interpolation_to_compose_strings
+                      print("Verification Status => " +
+                          FirebaseAuth.instance.currentUser!.emailVerified
+                              .toString());
                       // Navigate to homepage if the user is not an admin but email is verified
-                      Navigator.of(context).pushReplacementNamed("homepage");
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => Homepage(),
+                        ),
+                      );
                     } else {
                       // Prompt user to verify their email
-                      FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                      FirebaseAuth.instance.currentUser!
+                          .sendEmailVerification();
                       setState(() {
                         _message = 'Please verify your email.';
                         _isSuccessMessage = false;
@@ -234,7 +249,8 @@ class _LoginState extends State<Login> {
             // Sign up Link
             InkWell(
               onTap: () {
-                Navigator.of(context).pushReplacementNamed("signup"); // Navigate to sign-up page
+                Navigator.of(context)
+                    .pushReplacementNamed("signup"); // Navigate to sign-up page
               },
               child: const Center(
                 child: Text.rich(TextSpan(children: [
@@ -262,7 +278,8 @@ class _LoginState extends State<Login> {
             // Continue as Guest Button
             CustomButtonAuth(
               title: "Continue as a guest",
-              buttonColor: const Color.fromARGB(255, 56, 101, 217), // Button color
+              buttonColor:
+                  const Color.fromARGB(255, 56, 101, 217), // Button color
               onPressed: () {
                 // Navigate to homepage as a guest
                 Navigator.of(context).pushReplacement(

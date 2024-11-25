@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:salwa_app/auth/login.dart';
 import 'package:salwa_app/components/custombuttonauth.dart';
 import 'package:salwa_app/components/customlogoauth.dart';
 import 'package:salwa_app/components/textformfield.dart';
@@ -44,19 +45,21 @@ class _SignUpState extends State<SignUp> {
                   Container(height: 1),
                   const CustomLogoAuth(),
                   Container(height: 20),
-                  
+
                   // Title for the page
                   const Text(
                     "Sign up",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   Container(height: 20),
-                  
+
                   // Name input field
-                  const Text("Name", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  const Text("Name",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Container(height: 10),
                   CustomTextForm(
-                    hinttext: "Enter your name",
+                    hinttext: "Enter your Name",
                     mycontroller: username,
                     validator: (val) {
                       if (val == null || val.isEmpty) {
@@ -68,13 +71,17 @@ class _SignUpState extends State<SignUp> {
                   Container(height: 10),
 
                   // Email input field with validation for format and domain
-                  const Text("Email", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  const Text("Email",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Container(height: 10),
                   CustomTextForm(
-                    hinttext: "Enter your Email",
+                    hinttext: "Enter your University Email",
                     mycontroller: email,
                     validator: (val) {
-                      if (val == null || val.trim().isEmpty || !val.contains('@')) {
+                      if (val == null ||
+                          val.trim().isEmpty ||
+                          !val.contains('@')) {
                         return "The field can't be empty";
                       } else if (!val.endsWith('edu.sa')) {
                         return 'Please use a valid university email ending with edu.sa';
@@ -86,7 +93,9 @@ class _SignUpState extends State<SignUp> {
                   Container(height: 10),
 
                   // Password input field with validation for length and complexity
-                  const Text("Password", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  const Text("Password",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Container(height: 10),
                   CustomTextForm(
                     hinttext: "Enter your Password",
@@ -94,11 +103,12 @@ class _SignUpState extends State<SignUp> {
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
                         return "The field can't be empty";
-                      } else if (val.length < 6) {
+                      } else if (val.length < 8) {
                         return 'The password provided is too weak.';
                       } else if (!RegExp(r'[A-Z]').hasMatch(val)) {
                         return 'The password must contain at least one uppercase letter.';
                       }
+
                       return null; // Return null if validation passes
                     },
                     errorText: _passwordError,
@@ -118,7 +128,8 @@ class _SignUpState extends State<SignUp> {
                   // Check if the email ends with 'edu.sa'
                   if (!email.text.trim().endsWith('edu.sa')) {
                     setState(() {
-                      _emailError = 'Please use a valid university email ending with edu.sa';
+                      _emailError =
+                          'Please use a valid university email ending with edu.sa';
                     });
                     return; // Stop execution if email is invalid
                   }
@@ -142,9 +153,10 @@ class _SignUpState extends State<SignUp> {
                       'name': username.text,
                       'email': email.text,
                       'password': password.text
-                    }).then((value) {
-                      // Navigate to the login screen after successful sign up
-                      Navigator.of(context).pushReplacementNamed("login");
+                    }).then((value) async {
+                      // Force Signout the current user to pass by the verification conditions
+                      await FirebaseAuth.instance.signOut();
+                      showEmailVerificationNotification(context);
                     }).catchError((error) {
                       print("Failed to add user: $error");
                     });
@@ -156,7 +168,8 @@ class _SignUpState extends State<SignUp> {
                       });
                     } else if (e.code == 'email-already-in-use') {
                       setState(() {
-                        _emailError = 'The account already exists for that email.';
+                        _emailError =
+                            'The account already exists for that email.';
                       });
                     }
                   } catch (e) {
@@ -189,6 +202,35 @@ class _SignUpState extends State<SignUp> {
           ],
         ),
       ),
+    );
+  }
+
+  void showEmailVerificationNotification(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Email Verification Sent'),
+          content: Text(
+            'An email verification link has been sent to your email address. Please check your inbox and verify your email.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                // Navigate to the login screen after successful sign up
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const Login(),
+                  ),
+                );
+              },
+              child: Text('Okay'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

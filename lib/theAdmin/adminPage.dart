@@ -16,18 +16,15 @@ class AdminPage extends StatelessWidget {
       // app bar section
       appBar: AppBar(
         title: const Text("Admin Page"),
-        
         backgroundColor: const Color.fromARGB(255, 155, 182, 229),
-
         actions: [
           IconButton(
             // Logout button in the AppBar
             icon: const Icon(Icons.logout),
             onPressed: () async {
-            await FirebaseAuth.instance.signOut();
-            Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Login()),
-              );
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => Login()));
             },
             tooltip: "Logout",
           ),
@@ -100,7 +97,7 @@ class AdminPage extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) =>  Homepage()),
+                  MaterialPageRoute(builder: (context) => Homepage()),
                 );
               },
               child: const Text("Go to Home Page"),
